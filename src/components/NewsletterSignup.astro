@@ -9,19 +9,38 @@ const { variant = 'inline', heading = 'Get the Weekly AI-in-Ed Briefing', subhea
 ---
 
 <div class:list={[
-  'rounded-xl',
-  variant === 'hero' && 'bg-primary-600 text-white p-8 md:p-12',
-  variant === 'banner' && 'bg-accent-50 border border-accent-200 p-6',
-  variant === 'inline' && 'bg-gray-100 p-6',
-]} x-data="{ email: '', submitted: false, error: '' }">
-  <div class="max-w-xl mx-auto text-center" x-show="!submitted">
+  'rounded-2xl overflow-hidden',
+  variant === 'hero' && 'relative bg-gradient-to-br from-primary-600 via-primary-700 to-primary-900 text-white p-8 md:p-14',
+  variant === 'banner' && 'bg-accent-50 border border-accent-200 p-6 md:p-8',
+  variant === 'inline' && 'bg-surface-50 border border-gray-100 p-6 md:p-8',
+]} x-data="{ email: '', submitted: false, error: '', loading: false }">
+
+  {variant === 'hero' && (
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+      <div class="absolute -top-24 -right-24 w-72 h-72 bg-white/5 rounded-full blur-2xl"></div>
+      <div class="absolute -bottom-16 -left-16 w-56 h-56 bg-accent-500/10 rounded-full blur-2xl"></div>
+    </div>
+  )}
+
+  <div class="relative max-w-xl mx-auto text-center" x-show="!submitted" x-transition>
+    <div class:list={[
+      'inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium mb-4',
+      variant === 'hero' ? 'bg-white/15 text-white/90' : 'bg-primary-50 text-primary-700 ring-1 ring-primary-200',
+    ]}>
+      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+      </svg>
+      Free weekly newsletter
+    </div>
+
     <h3 class:list={[
-      'font-display font-bold',
+      'font-bold tracking-tight',
       variant === 'hero' ? 'text-2xl md:text-3xl text-white' : 'text-xl text-gray-900',
     ]}>{heading}</h3>
+
     <p class:list={[
-      'mt-2 text-sm',
-      variant === 'hero' ? 'text-primary-100' : 'text-gray-600',
+      'mt-2.5 text-sm leading-relaxed',
+      variant === 'hero' ? 'text-primary-100' : 'text-gray-500',
     ]}>{subheading}</p>
 
     <form
@@ -29,6 +48,7 @@ const { variant = 'inline', heading = 'Get the Weekly AI-in-Ed Briefing', subhea
       @submit.prevent="
         error = '';
         if (!email) { error = 'Please enter your email'; return; }
+        loading = true;
         try {
           const res = await fetch('/api/subscribe', {
             method: 'POST',
@@ -38,6 +58,7 @@ const { variant = 'inline', heading = 'Get the Weekly AI-in-Ed Briefing', subhea
           if (res.ok) { submitted = true; }
           else { const d = await res.json(); error = d.error || 'Something went wrong'; }
         } catch(e) { error = 'Network error — please try again'; }
+        loading = false;
       "
     >
       <input
@@ -45,18 +66,45 @@ const { variant = 'inline', heading = 'Get the Weekly AI-in-Ed Briefing', subhea
         x-model="email"
         placeholder="you@school.edu"
         required
-        class="flex-1 px-4 py-3 rounded-lg border border-gray-300 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+        class:list={[
+          'flex-1 px-4 py-3 rounded-xl text-sm focus:outline-none focus:ring-2 transition-shadow duration-200',
+          variant === 'hero'
+            ? 'bg-white/10 border border-white/20 text-white placeholder-white/50 focus:ring-white/40 focus:border-transparent'
+            : 'border border-gray-200 text-gray-900 placeholder-gray-400 focus:ring-primary-500 focus:border-transparent',
+        ]}
       />
-      <button type="submit" class:list={[
-        variant === 'hero' ? 'btn-accent' : 'btn-primary',
-      ]}>Subscribe Free</button>
+      <button
+        type="submit"
+        :disabled="loading"
+        class:list={[
+          'inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-medium text-sm transition-all duration-200 ease-out hover:-translate-y-0.5 active:translate-y-0 whitespace-nowrap',
+          variant === 'hero'
+            ? 'bg-white text-primary-700 hover:bg-primary-50 shadow-sm'
+            : variant === 'banner' ? 'bg-accent-600 text-white hover:bg-accent-700 shadow-sm' : 'bg-primary-600 text-white hover:bg-primary-700 shadow-sm',
+        ]}
+      >
+        <span x-show="!loading">Subscribe Free</span>
+        <span x-show="loading" class="flex items-center gap-2">
+          <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" /><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
+          Subscribing...
+        </span>
+      </button>
     </form>
-    <p x-show="error" x-text="error" class="mt-2 text-sm text-red-400"></p>
-    <p class:list={['mt-3 text-xs', variant === 'hero' ? 'text-primary-200' : 'text-gray-500']}>No spam. Unsubscribe anytime. We respect your inbox.</p>
+
+    <p x-show="error" x-text="error" x-transition class="mt-2 text-sm text-red-400 font-medium"></p>
+    <p class:list={['mt-3 text-xs', variant === 'hero' ? 'text-primary-200' : 'text-gray-400']}>No spam. Unsubscribe anytime. We respect your inbox.</p>
   </div>
 
-  <div x-show="submitted" class="text-center py-4">
-    <p class:list={['font-display font-bold text-xl', variant === 'hero' ? 'text-white' : 'text-gray-900']}>You're in! 🎉</p>
-    <p class:list={['mt-2 text-sm', variant === 'hero' ? 'text-primary-100' : 'text-gray-600']}>Check your inbox for a welcome email with your free AI Policy Template.</p>
+  <div x-show="submitted" x-transition.duration.500ms class="text-center py-6">
+    <div class:list={[
+      'w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4',
+      variant === 'hero' ? 'bg-white/15' : 'bg-accent-50',
+    ]}>
+      <svg class:list={['w-7 h-7', variant === 'hero' ? 'text-white' : 'text-accent-600']} fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    </div>
+    <p class:list={['font-bold text-xl', variant === 'hero' ? 'text-white' : 'text-gray-900']}>You're in!</p>
+    <p class:list={['mt-2 text-sm', variant === 'hero' ? 'text-primary-100' : 'text-gray-500']}>Check your inbox for a welcome email with your free AI Policy Template.</p>
   </div>
 </div>
