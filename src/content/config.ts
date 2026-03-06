@@ -19,6 +19,16 @@ const tools = defineCollection({
     publishDate: z.date(),
     featured: z.boolean().default(false),
     image: z.string().optional(),
+    reviewedBy: z.string(),
+    reviewFrameworkVersion: z.string().default('v1'),
+    evidenceLevel: z.enum(['vendor-stated', 'document-reviewed', 'operationally-observed']),
+    verificationNotes: z.array(z.string()).min(1),
+    rubric: z.object({
+      privacy: z.number().min(1).max(5),
+      instructionalValue: z.number().min(1).max(5),
+      implementation: z.number().min(1).max(5),
+      transparency: z.number().min(1).max(5),
+    }),
   }),
 });
 

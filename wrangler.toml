@@ -5,6 +5,11 @@ compatibility_flags = ["nodejs_compat"]
 [assets]
 directory = "./dist"
 
+routes = [
+  { pattern = "aiforedu.ai", custom_domain = true },
+  { pattern = "www.aiforedu.ai", custom_domain = true }
+]
+
 [vars]
 SITE_URL = "https://aiforedu.ai"
 
@@ -12,6 +17,12 @@ SITE_URL = "https://aiforedu.ai"
 # BEEHIIV_PUBLICATION_ID = ""
 # LEMON_SQUEEZY_STORE_ID = ""
 # TURNSTILE_SECRET_KEY = ""
+# CONTACT_WEBHOOK_URL = ""
+
+# Uncomment and configure if Cloudflare adapter sessions are enabled in production.
+# [[kv_namespaces]]
+# binding = "SESSION"
+# id = "your-session-kv-id"
 
 [[d1_databases]]
 binding = "DB"
@@ -21,8 +32,3 @@ database_id = "2a62322b-382c-4c11-98fc-c8a13d496533"
 [[r2_buckets]]
 binding = "ASSETS"
 bucket_name = "aiforedu-assets"
-
-routes = [
-  { pattern = "aiforedu.ai", custom_domain = true },
-  { pattern = "www.aiforedu.ai", custom_domain = true }
-]

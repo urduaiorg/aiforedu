@@ -1,4 +1,6 @@
 ---
+import '@/styles/global.css';
+
 interface Props {
   title: string;
   description?: string;
@@ -6,9 +8,16 @@ interface Props {
   canonical?: string;
 }
 
-const { title, description = 'The #1 AI-in-education library for K-12 school leaders. Unbiased tool reviews, policy templates, and practical guides.', ogImage = '/og-default.png', canonical } = Astro.props;
+const { title, description = 'AI intelligence for school leadership: independent tool reviews, policy resources, and implementation guidance for K-12 teams.', ogImage = '/og-default.svg', canonical } = Astro.props;
 const fullTitle = title === 'Home' ? 'AIForEdu — AI Tools, Policies & Guides for School Leaders' : `${title} | AIForEdu`;
 const canonicalURL = canonical || new URL(Astro.url.pathname, Astro.site).href;
+const navItems = [
+  { href: '/tools/', label: 'Tools' },
+  { href: '/compare/', label: 'Compare' },
+  { href: '/policy/', label: 'Policies' },
+  { href: '/guides/', label: 'Guides' },
+  { href: '/products/', label: 'Products' },
+];
 ---
 
 <!DOCTYPE html>
@@ -31,109 +40,137 @@ const canonicalURL = canonical || new URL(Astro.url.pathname, Astro.site).href;
   <meta name="twitter:description" content={description} />
   <meta name="twitter:image" content={new URL(ogImage, Astro.site).href} />
   <link rel="manifest" href="/manifest.webmanifest" />
-  <meta name="theme-color" content="#ffffff" />
-  <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+  <meta name="theme-color" content="#0d1320" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/icons/icon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,500..700,50&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link href="/pagefind/pagefind-ui.css" rel="stylesheet" />
   <slot name="head" />
 </head>
-<body class="h-full flex flex-col">
-
-  <!-- Nav -->
-  <header class="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-neutral-100" x-data="{ open: false }">
-    <nav class="container-full flex items-center justify-between h-14">
-      <a href="/" class="font-bold text-neutral-900 text-[15px] tracking-tight">
-        AIForEdu<span class="text-brand-600">.</span>
-      </a>
-
-      <div class="hidden md:flex items-center gap-6">
-        <a href="/tools/" class="text-sm text-neutral-500 hover:text-neutral-900 transition-colors">Tools</a>
-        <a href="/compare/" class="text-sm text-neutral-500 hover:text-neutral-900 transition-colors">Compare</a>
-        <a href="/policy/" class="text-sm text-neutral-500 hover:text-neutral-900 transition-colors">Policies</a>
-        <a href="/guides/" class="text-sm text-neutral-500 hover:text-neutral-900 transition-colors">Guides</a>
-        <a href="/products/" class="text-sm text-neutral-500 hover:text-neutral-900 transition-colors">Products</a>
-      </div>
-
-      <div class="hidden md:flex items-center gap-3">
-        <a href="/newsletter/" class="btn-dark text-xs">Subscribe</a>
-      </div>
-
-      <button @click="open = !open" class="md:hidden p-1.5 -mr-1.5 text-neutral-500 hover:text-neutral-900 rounded-md">
-        <svg x-show="!open" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 9h16.5m-16.5 6.75h16.5" /></svg>
-        <svg x-show="open" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-      </button>
-    </nav>
-
-    <div x-show="open" x-transition class="md:hidden bg-white border-t border-neutral-100">
-      <div class="container-full flex flex-col py-3">
-        <a href="/tools/" class="py-2 text-sm text-neutral-600 hover:text-neutral-900">Tools</a>
-        <a href="/compare/" class="py-2 text-sm text-neutral-600 hover:text-neutral-900">Compare</a>
-        <a href="/policy/" class="py-2 text-sm text-neutral-600 hover:text-neutral-900">Policies</a>
-        <a href="/guides/" class="py-2 text-sm text-neutral-600 hover:text-neutral-900">Guides</a>
-        <a href="/products/" class="py-2 text-sm text-neutral-600 hover:text-neutral-900">Products</a>
-        <div class="border-t border-neutral-100 my-2"></div>
-        <a href="/newsletter/" class="btn-dark text-sm text-center">Subscribe</a>
-      </div>
-    </div>
-  </header>
-
-  <div class="h-14"></div>
-
-  <main class="flex-1">
-    <slot />
-  </main>
-
-  <!-- Footer -->
-  <footer class="border-t border-neutral-100">
-    <div class="container-full py-16">
-      <div class="grid grid-cols-2 md:grid-cols-5 gap-8">
-        <div class="col-span-2 md:col-span-1">
-          <span class="font-bold text-neutral-900 text-sm">AIForEdu<span class="text-brand-600">.</span></span>
-          <p class="mt-3 text-xs text-neutral-400 leading-relaxed max-w-[200px]">The independent AI-in-education library for K-12 school leaders.</p>
-        </div>
-        <div>
-          <h4 class="text-xs font-semibold uppercase tracking-wider text-neutral-400 mb-3">Library</h4>
-          <ul class="space-y-2 text-sm">
-            <li><a href="/tools/" class="text-neutral-500 hover:text-neutral-900 transition-colors">Tools</a></li>
-            <li><a href="/compare/" class="text-neutral-500 hover:text-neutral-900 transition-colors">Compare</a></li>
-            <li><a href="/policy/" class="text-neutral-500 hover:text-neutral-900 transition-colors">Policies</a></li>
-            <li><a href="/guides/" class="text-neutral-500 hover:text-neutral-900 transition-colors">Guides</a></li>
-          </ul>
-        </div>
-        <div>
-          <h4 class="text-xs font-semibold uppercase tracking-wider text-neutral-400 mb-3">Products</h4>
-          <ul class="space-y-2 text-sm">
-            <li><a href="/products/" class="text-neutral-500 hover:text-neutral-900 transition-colors">Policy Kit</a></li>
-            <li><a href="/products/" class="text-neutral-500 hover:text-neutral-900 transition-colors">Readiness Workbook</a></li>
-            <li><a href="/products/" class="text-neutral-500 hover:text-neutral-900 transition-colors">Vetting Pack</a></li>
-            <li><a href="/newsletter/" class="text-neutral-500 hover:text-neutral-900 transition-colors">Newsletter</a></li>
-          </ul>
-        </div>
-        <div>
-          <h4 class="text-xs font-semibold uppercase tracking-wider text-neutral-400 mb-3">Company</h4>
-          <ul class="space-y-2 text-sm">
-            <li><a href="/about/" class="text-neutral-500 hover:text-neutral-900 transition-colors">About</a></li>
-            <li><a href="/contact/" class="text-neutral-500 hover:text-neutral-900 transition-colors">Contact</a></li>
-            <li><a href="/privacy/" class="text-neutral-500 hover:text-neutral-900 transition-colors">Privacy</a></li>
-            <li><a href="/terms/" class="text-neutral-500 hover:text-neutral-900 transition-colors">Terms</a></li>
-          </ul>
-        </div>
-        <div>
-          <h4 class="text-xs font-semibold uppercase tracking-wider text-neutral-400 mb-3">Connect</h4>
-          <ul class="space-y-2 text-sm">
-            <li><a href="mailto:hello@aiforedu.ai" class="text-neutral-500 hover:text-neutral-900 transition-colors">hello@aiforedu.ai</a></li>
-            <li><a href="https://imglocal.com" class="text-neutral-500 hover:text-neutral-900 transition-colors">Impact Glocal Inc.</a></li>
-          </ul>
+<body class="min-h-full">
+  <div class="page-shell flex min-h-full flex-col">
+    <header class="fixed inset-x-0 top-0 z-50" x-data="{ open: false }">
+      <div class="surface-rule bg-paper-50/80 backdrop-blur-xl">
+        <div class="container-full flex items-center justify-between py-3 text-[11px] font-medium uppercase tracking-[0.18em] text-ink-400">
+          <p>Independent AI research for K-12 school leadership</p>
+          <a href="/newsletter/" class="hidden md:inline-flex items-center gap-2 text-ink-500 hover:text-ink-900">
+            Weekly briefing
+            <span class="divider-dot"></span>
+            Tuesdays
+          </a>
         </div>
       </div>
-      <div class="border-t border-neutral-100 mt-12 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-neutral-400">
-        <p>&copy; {new Date().getFullYear()} Impact Glocal Inc.</p>
-        <p>Some links may earn a commission at no cost to you.</p>
+      <div class="border-b border-paper-300/90 bg-paper-50/86 backdrop-blur-xl">
+        <nav class="container-full flex items-center justify-between py-4">
+          <a href="/" class="flex items-center gap-3">
+            <span class="rounded-full border border-paper-300 bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-ink-500">AIForEdu</span>
+            <span class="hidden text-sm text-ink-400 md:inline">School AI intelligence, policy, and procurement guidance</span>
+          </a>
+
+          <div class="hidden items-center gap-6 md:flex">
+            {navItems.map((item) => (
+              <a
+                href={item.href}
+                class:list={[
+                  'text-sm font-medium',
+                  Astro.url.pathname.startsWith(item.href) ? 'text-ink-950' : 'text-ink-500 hover:text-ink-950',
+                ]}
+              >
+                {item.label}
+              </a>
+            ))}
+          </div>
+
+          <div class="hidden items-center gap-3 md:flex">
+            <a href="/methodology/" class="btn-secondary">Methodology</a>
+            <a href="/products/" class="btn-primary">Premium resources</a>
+          </div>
+
+          <button @click="open = !open" class="rounded-full border border-paper-300 bg-white p-2 text-ink-700 md:hidden">
+            <svg x-show="!open" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 9h16.5m-16.5 6.75h16.5" /></svg>
+            <svg x-show="open" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+          </button>
+        </nav>
       </div>
-    </div>
-  </footer>
+
+      <div x-show="open" x-transition class="border-b border-paper-300/90 bg-paper-50/95 backdrop-blur md:hidden">
+        <div class="container-full space-y-2 py-4">
+          {navItems.map((item) => (
+            <a href={item.href} class="block rounded-2xl border border-paper-300 bg-white/80 px-4 py-3 text-sm font-medium text-ink-700">
+              {item.label}
+            </a>
+          ))}
+          <div class="grid grid-cols-2 gap-3 pt-2">
+            <a href="/methodology/" class="btn-secondary w-full">Method</a>
+            <a href="/products/" class="btn-primary w-full">Premium</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="h-[7.5rem] md:h-[8rem]"></div>
+
+    <main class="flex-1">
+      <slot />
+    </main>
+
+    <footer class="mt-16 border-t border-paper-300/90 bg-paper-100/70">
+      <div class="container-full py-16 md:py-20">
+        <div class="grid gap-10 lg:grid-cols-[1.3fr_repeat(3,minmax(0,1fr))]">
+          <div class="max-w-md">
+            <p class="eyebrow">AIForEdu</p>
+            <h2 class="mt-6 font-display text-display-xs text-ink-950">A more rigorous lens on AI adoption for schools.</h2>
+            <p class="mt-4 text-base leading-8 text-ink-500">
+              We help school leaders evaluate tools, policy risk, and implementation decisions with more clarity and less vendor noise.
+            </p>
+            <div class="mt-6 flex flex-wrap gap-3">
+              <span class="metric-chip">Tool reviews</span>
+              <span class="metric-chip">Policy templates</span>
+              <span class="metric-chip">Implementation guides</span>
+            </div>
+          </div>
+
+          <div>
+            <p class="section-label">Library</p>
+            <div class="mt-4 space-y-3">
+              <a href="/tools/" class="footer-link block">Tool reviews</a>
+              <a href="/compare/" class="footer-link block">Comparisons</a>
+              <a href="/policy/" class="footer-link block">Policies</a>
+              <a href="/guides/" class="footer-link block">Guides</a>
+            </div>
+          </div>
+
+          <div>
+            <p class="section-label">Programs</p>
+            <div class="mt-4 space-y-3">
+              <a href="/products/" class="footer-link block">Premium resources</a>
+              <a href="/methodology/" class="footer-link block">Methodology</a>
+              <a href="/newsletter/" class="footer-link block">Weekly briefing</a>
+              <a href="/about/" class="footer-link block">About and mission</a>
+              <a href="/contact/" class="footer-link block">Contact</a>
+            </div>
+          </div>
+
+          <div>
+            <p class="section-label">Governance</p>
+            <div class="mt-4 space-y-3">
+              <a href="/privacy/" class="footer-link block">Privacy</a>
+              <a href="/terms/" class="footer-link block">Terms</a>
+              <a href="mailto:hello@aiforedu.ai" class="footer-link block">hello@aiforedu.ai</a>
+              <a href="https://imglocal.com" class="footer-link block">Impact Glocal Inc.</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="surface-rule mt-12 flex flex-col gap-3 pt-6 text-sm text-ink-400 md:flex-row md:items-center md:justify-between">
+          <p>&copy; {new Date().getFullYear()} Impact Glocal Inc. Editorial independence remains the operating principle.</p>
+          <p>Some vendor links may earn a commission at no added cost to the buyer.</p>
+        </div>
+      </div>
+    </footer>
+  </div>
 
   <script>
     import Alpine from 'alpinejs';

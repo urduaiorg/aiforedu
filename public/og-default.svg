@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0d1320" />
+      <stop offset="100%" stop-color="#1e3269" />
+    </linearGradient>
+    <linearGradient id="panel" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.96" />
+      <stop offset="100%" stop-color="#f5efe4" stop-opacity="0.92" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)" />
+  <circle cx="1050" cy="110" r="180" fill="#3155d6" opacity="0.25" />
+  <circle cx="150" cy="560" r="210" fill="#eef6f1" opacity="0.08" />
+  <rect x="72" y="72" width="1056" height="486" rx="38" fill="url(#panel)" />
+  <text x="130" y="168" fill="#3155d6" font-family="Inter, Arial, sans-serif" font-size="26" font-weight="700" letter-spacing="5">AIFOREDU</text>
+  <text x="130" y="272" fill="#151b29" font-family="Georgia, serif" font-size="78" font-weight="700">AI intelligence for</text>
+  <text x="130" y="356" fill="#151b29" font-family="Georgia, serif" font-size="78" font-weight="700">school leadership.</text>
+  <text x="130" y="430" fill="#44516a" font-family="Inter, Arial, sans-serif" font-size="31">Independent reviews, policy resources, procurement guidance,</text>
+  <text x="130" y="472" fill="#44516a" font-family="Inter, Arial, sans-serif" font-size="31">and implementation support for K-12 teams adopting AI.</text>
+  <g transform="translate(865 203)">
+    <rect width="178" height="178" rx="38" fill="#0d1320" />
+    <path d="M89 34l50 25v15H39V59l50-25z" fill="#f5efe4" />
+    <path d="M53 84h72v12H53zM58 103h16v40H58zM81 103h16v40H81zM104 103h16v40h-16z" fill="#f5efe4" />
+    <path d="M48 149h82v10H48z" fill="#d9dfeb" />
+  </g>
+</svg>

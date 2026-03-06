@@ -5,29 +5,28 @@ interface Props {
   subheading?: string;
 }
 
-const { variant = 'inline', heading = 'Get the Weekly AI-in-Ed Briefing', subheading = 'One tool review, one policy tip, one action step — every Tuesday. Join 2,500+ school leaders.' } = Astro.props;
+const { variant = 'inline', heading = 'Get the Weekly AI-in-Ed Briefing', subheading = 'One tool review, one policy tip, and one action step for school leadership teams every Tuesday.' } = Astro.props;
 ---
 
 <div class:list={[
-  'rounded-xl',
-  variant === 'hero' && 'bg-neutral-900 text-white p-8 md:p-12',
-  variant === 'banner' && 'bg-brand-50 border border-brand-100 p-6',
-  variant === 'inline' && 'bg-surface-50 border border-neutral-100 p-6',
-]} x-data="{ email: '', submitted: false, error: '', loading: false }">
-
+  variant === 'hero' && 'cta-panel-dark',
+  variant === 'banner' && 'cta-panel',
+  variant === 'inline' && 'editorial-panel',
+]} x-data="{ email: '', submitted: false, error: '', loading: false, successTitle: 'Subscription confirmed', successMessage: 'Check your inbox for the first briefing and welcome resources.' }">
   <div class="max-w-md mx-auto" x-show="!submitted" x-transition>
+    <p class:list={['section-label', variant === 'hero' ? 'text-brand-200' : 'text-ink-400']}>Weekly intelligence brief</p>
     <h3 class:list={[
-      'font-semibold',
-      variant === 'hero' ? 'text-xl text-white' : 'text-lg text-neutral-900',
+      'mt-3 font-display text-display-xs',
+      variant === 'hero' ? 'text-white' : 'text-ink-950',
     ]}>{heading}</h3>
 
     <p class:list={[
-      'mt-2 text-sm leading-relaxed',
-      variant === 'hero' ? 'text-neutral-400' : 'text-neutral-500',
+      'mt-3 text-sm leading-7',
+      variant === 'hero' ? 'text-ink-200' : 'text-ink-500',
     ]}>{subheading}</p>
 
     <form
-      class="mt-5 flex gap-2"
+      class="mt-6 space-y-3"
       @submit.prevent="
         error = '';
         if (!email) { error = 'Please enter your email'; return; }
@@ -36,47 +35,57 @@ const { variant = 'inline', heading = 'Get the Weekly AI-in-Ed Briefing', subhea
           const res = await fetch('/api/subscribe', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email })
+            body: JSON.stringify({ email, useCase: 'weekly-briefing' })
           });
-          if (res.ok) { submitted = true; }
+          if (res.ok) {
+            const d = await res.json();
+            successTitle = d.successTitle || successTitle;
+            successMessage = d.successMessage || successMessage;
+            submitted = true;
+          }
           else { const d = await res.json(); error = d.error || 'Something went wrong'; }
         } catch(e) { error = 'Network error'; }
         loading = false;
       "
     >
-      <input
-        type="email"
-        x-model="email"
-        placeholder="you@school.edu"
-        required
-        class:list={[
-          'flex-1 px-3.5 py-2.5 rounded-lg text-sm focus:outline-none focus:ring-2',
-          variant === 'hero'
-            ? 'bg-white/10 border border-white/10 text-white placeholder-neutral-500 focus:ring-white/20'
-            : 'border border-neutral-200 text-neutral-900 placeholder-neutral-400 focus:ring-brand-600 focus:border-transparent',
-        ]}
-      />
-      <button
-        type="submit"
-        :disabled="loading"
-        class:list={[
-          'btn shrink-0',
-          variant === 'hero'
-            ? 'bg-white text-neutral-900 hover:bg-neutral-100'
-            : 'bg-brand-600 text-white hover:bg-brand-700',
-        ]}
-      >
-        <span x-show="!loading">Subscribe</span>
-        <span x-show="loading">...</span>
-      </button>
-    </form>
+      <div class="flex flex-col gap-3 sm:flex-row">
+        <input
+          type="email"
+          x-model="email"
+          placeholder="you@school.edu"
+          required
+          class:list={[
+            'flex-1',
+            variant === 'hero'
+              ? 'w-full rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-sm text-white placeholder:text-white/45 focus:border-white/30 focus:outline-none focus:ring-2 focus:ring-white/15'
+              : 'input',
+          ]}
+        />
+        <button
+          type="submit"
+          :disabled="loading"
+          class:list={[
+            'shrink-0 justify-center',
+            variant === 'hero' ? 'btn-secondary' : 'btn-primary',
+          ]}
+        >
+          <span x-show="!loading">Subscribe</span>
+          <span x-show="loading">Working...</span>
+        </button>
+      </div>
 
-    <p x-show="error" x-text="error" x-transition class="mt-2 text-xs text-red-400"></p>
-    <p class:list={['mt-2.5 text-[11px]', variant === 'hero' ? 'text-neutral-500' : 'text-neutral-400']}>No spam. Unsubscribe anytime.</p>
+      <p x-show="error" x-text="error" x-transition class:list={['text-xs', variant === 'hero' ? 'text-red-200' : 'text-red-600']}></p>
+      <div class="flex flex-wrap gap-3 text-[11px] uppercase tracking-[0.16em]">
+        <span class:list={[variant === 'hero' ? 'text-ink-300' : 'text-ink-400']}>No spam</span>
+        <span class:list={[variant === 'hero' ? 'text-ink-500' : 'text-paper-300']}>•</span>
+        <span class:list={[variant === 'hero' ? 'text-ink-300' : 'text-ink-400']}>Unsubscribe anytime</span>
+      </div>
+    </form>
   </div>
 
   <div x-show="submitted" x-transition class="text-center py-4 max-w-md mx-auto">
-    <p class:list={['font-semibold', variant === 'hero' ? 'text-white' : 'text-neutral-900']}>You're in!</p>
-    <p class:list={['mt-1 text-sm', variant === 'hero' ? 'text-neutral-400' : 'text-neutral-500']}>Check your inbox for a welcome email.</p>
+    <p class:list={['section-label', variant === 'hero' ? 'text-brand-200' : 'text-ink-400']}>Subscription confirmed</p>
+    <p class:list={['mt-3 font-display text-display-xs', variant === 'hero' ? 'text-white' : 'text-ink-950']} x-text="successTitle">You are in.</p>
+    <p class:list={['mt-2 text-sm leading-7', variant === 'hero' ? 'text-ink-200' : 'text-ink-500']} x-text="successMessage">Check your inbox for the first briefing and welcome resources.</p>
   </div>
 </div>

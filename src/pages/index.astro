@@ -6,165 +6,148 @@ import ProductCard from '../components/ProductCard.astro';
 import { getCollection } from 'astro:content';
 
 const allTools = await getCollection('tools');
+const allPolicies = await getCollection('policies');
+const allGuides = await getCollection('guides');
 const featuredTools = allTools.filter(t => t.data.featured).slice(0, 6);
 const latestTools = allTools.sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime()).slice(0, 6);
 const displayTools = featuredTools.length > 0 ? featuredTools : latestTools;
-
-const categories = [
-  { name: 'Writing & Feedback', slug: 'writing', count: '12 tools' },
-  { name: 'Grading & Assessment', slug: 'grading', count: '8 tools' },
-  { name: 'Lesson Planning', slug: 'lesson-planning', count: '10 tools' },
-  { name: 'Admin & Operations', slug: 'admin', count: '7 tools' },
-  { name: 'Student-Facing', slug: 'student-facing', count: '9 tools' },
-  { name: 'Special Education', slug: 'special-ed', count: '5 tools' },
-];
+const avgRating = (allTools.reduce((sum, tool) => sum + tool.data.rating, 0) / allTools.length).toFixed(1);
+const categoryLabels: Record<string, string> = {
+  writing: 'Writing and feedback',
+  grading: 'Grading and assessment',
+  'lesson-planning': 'Lesson planning',
+  admin: 'Administration and operations',
+  'student-facing': 'Student-facing tools',
+  'special-ed': 'Special education',
+  analytics: 'Analytics and insight',
+};
+const categories = Object.entries(
+  allTools.reduce((acc, tool) => {
+    acc[tool.data.category] = (acc[tool.data.category] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>)
+)
+  .map(([slug, count]) => ({
+    slug,
+    name: categoryLabels[slug] || slug,
+    count,
+  }))
+  .sort((a, b) => b.count - a.count)
+  .slice(0, 6);
 ---
 
 <BaseLayout title="Home">
-
-  <!-- HERO -->
-  <section class="pt-20 pb-24 md:pt-32 md:pb-36">
-    <div class="container-wide">
-      <div class="max-w-3xl" data-reveal>
-        <p class="text-sm font-medium text-brand-600 mb-5">For K-12 school leaders</p>
-        <h1 class="text-display-sm md:text-display text-neutral-900">
-          The independent<br />AI library for schools
-        </h1>
-        <p class="mt-6 text-lg text-neutral-400 max-w-lg leading-relaxed">
-          Unbiased tool reviews, ready-to-adopt policies, and implementation guides. Everything you need to bring AI into your school responsibly.
-        </p>
-        <div class="mt-10 flex flex-wrap items-center gap-4">
-          <a href="/tools/" class="btn-dark group">
-            Browse tools
-            <svg class="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
-          </a>
-          <a href="#free-template" class="btn-outline">Get free policy template</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- PRODUCT MOCKUP — shows what the site actually looks like -->
-  <section class="pb-24 md:pb-32">
-    <div class="container-wide" data-reveal>
-      <div class="bg-neutral-950 rounded-xl p-1.5 shadow-mockup">
-        <!-- Browser chrome -->
-        <div class="flex items-center gap-2 px-4 py-2.5">
-          <div class="flex gap-1.5">
-            <div class="w-2.5 h-2.5 rounded-full bg-neutral-700"></div>
-            <div class="w-2.5 h-2.5 rounded-full bg-neutral-700"></div>
-            <div class="w-2.5 h-2.5 rounded-full bg-neutral-700"></div>
-          </div>
-          <div class="flex-1 mx-8">
-            <div class="bg-neutral-800 rounded-md px-3 py-1 text-[11px] text-neutral-500 text-center">aiforedu.ai/tools</div>
-          </div>
-        </div>
-        <!-- Content -->
-        <div class="bg-white rounded-lg p-6 md:p-8">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl">
-            <!-- Mock review card 1 -->
-            <div class="border border-neutral-200 rounded-lg p-4">
-              <div class="flex items-center justify-between mb-2">
-                <span class="text-[10px] font-semibold uppercase tracking-wider text-neutral-400">WRITING</span>
-                <span class="tag-green">free</span>
-              </div>
-              <p class="font-semibold text-sm text-neutral-900">SchoolAI</p>
-              <p class="text-xs text-neutral-500 mt-1">AI-powered learning spaces for K-12</p>
-              <div class="flex items-center gap-1 mt-3">
-                {[1,2,3,4,5].map(() => (
-                  <svg class="w-3 h-3 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
-                ))}
-                <span class="text-[10px] text-neutral-400 ml-1">4.8</span>
-              </div>
-              <div class="mt-3 pt-2 border-t border-neutral-100">
-                <span class="tag-green text-[9px]">FERPA</span>
-              </div>
-            </div>
-            <!-- Mock review card 2 -->
-            <div class="border border-neutral-200 rounded-lg p-4">
-              <div class="flex items-center justify-between mb-2">
-                <span class="text-[10px] font-semibold uppercase tracking-wider text-neutral-400">LESSON PLANNING</span>
-                <span class="tag-blue">freemium</span>
-              </div>
-              <p class="font-semibold text-sm text-neutral-900">MagicSchool AI</p>
-              <p class="text-xs text-neutral-500 mt-1">60+ AI tools built for teachers</p>
-              <div class="flex items-center gap-1 mt-3">
-                {[1,2,3,4].map(() => (
-                  <svg class="w-3 h-3 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
-                ))}
-                <svg class="w-3 h-3 text-neutral-200" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
-                <span class="text-[10px] text-neutral-400 ml-1">4.5</span>
-              </div>
-              <div class="mt-3 pt-2 border-t border-neutral-100">
-                <span class="tag-green text-[9px]">FERPA</span>
-              </div>
-            </div>
-            <!-- Mock review card 3 -->
-            <div class="border border-neutral-200 rounded-lg p-4">
-              <div class="flex items-center justify-between mb-2">
-                <span class="text-[10px] font-semibold uppercase tracking-wider text-neutral-400">GRADING</span>
-                <span class="tag-amber">paid</span>
-              </div>
-              <p class="font-semibold text-sm text-neutral-900">Diffit</p>
-              <p class="text-xs text-neutral-500 mt-1">Differentiated reading resources</p>
-              <div class="flex items-center gap-1 mt-3">
-                {[1,2,3,4].map(() => (
-                  <svg class="w-3 h-3 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
-                ))}
-                <svg class="w-3 h-3 text-neutral-200" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
-                <span class="text-[10px] text-neutral-400 ml-1">4.2</span>
-              </div>
-              <div class="mt-3 pt-2 border-t border-neutral-100">
-                <span class="tag-green text-[9px]">FERPA</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- STATS — horizontal, minimal -->
-  <section class="border-y border-neutral-100 py-12" data-reveal>
-    <div class="container-wide">
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
-        <div>
-          <p class="text-3xl md:text-4xl font-extrabold text-neutral-900 tracking-tight">50+</p>
-          <p class="mt-1 text-sm text-neutral-400">Tools reviewed</p>
-        </div>
-        <div>
-          <p class="text-3xl md:text-4xl font-extrabold text-neutral-900 tracking-tight">100%</p>
-          <p class="mt-1 text-sm text-neutral-400">FERPA checked</p>
-        </div>
-        <div>
-          <p class="text-3xl md:text-4xl font-extrabold text-neutral-900 tracking-tight">2,500+</p>
-          <p class="mt-1 text-sm text-neutral-400">School leaders</p>
-        </div>
-        <div>
-          <p class="text-3xl md:text-4xl font-extrabold text-neutral-900 tracking-tight">Monthly</p>
-          <p class="mt-1 text-sm text-neutral-400">Content updates</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CATEGORIES — list style, not cards -->
-  <section class="py-24 md:py-32">
-    <div class="container-wide">
-      <div class="grid lg:grid-cols-2 gap-16">
+  <section class="page-hero section-shell">
+    <div class="container-full">
+      <div class="grid gap-10 lg:grid-cols-[minmax(0,1.15fr)_24rem] lg:items-end">
         <div data-reveal>
-          <p class="section-label">Categories</p>
-          <h2 class="text-display-sm text-neutral-900">Every tool reviewed<br />for what matters</h2>
-          <p class="mt-5 text-neutral-400 leading-relaxed max-w-sm">Privacy compliance. Pedagogical value. Practical classroom fit. We test what school leaders actually care about.</p>
+          <p class="eyebrow">For superintendents, principals, and district teams</p>
+          <h1 class="mt-6 max-w-4xl font-display text-[3.4rem] leading-[0.95] text-ink-950 md:text-hero">
+            The AI intelligence desk for modern school leadership.
+          </h1>
+          <p class="page-lede max-w-2xl">
+            Independent tool reviews, implementation guidance, and board-ready policy resources designed to help schools adopt AI with more rigor, more speed, and fewer blind spots.
+          </p>
+          <div class="mt-8 flex flex-wrap gap-3">
+            <a href="/tools/" class="btn-primary">Explore the library</a>
+            <a href="#free-template" class="btn-secondary">Access the free policy starter</a>
+          </div>
+          <div class="mt-8 flex flex-wrap gap-3">
+            <span class="metric-chip">{allTools.length} reviewed tools</span>
+            <span class="metric-chip">{allPolicies.length} policy assets</span>
+            <span class="metric-chip">{allGuides.length} implementation guides</span>
+            <span class="metric-chip">{avgRating}/5 average rating</span>
+          </div>
         </div>
-        <div data-reveal-stagger>
-          {categories.map(cat => (
-            <a href={`/tools/?category=${cat.slug}`} class="group flex items-center justify-between py-4 border-b border-neutral-100 hover:border-neutral-300 transition-colors">
-              <span class="text-base font-medium text-neutral-900 group-hover:text-brand-600 transition-colors">{cat.name}</span>
-              <div class="flex items-center gap-3">
-                <span class="text-xs text-neutral-400">{cat.count}</span>
-                <svg class="w-4 h-4 text-neutral-300 group-hover:text-brand-600 transition-all group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
-              </div>
+
+        <div class="editorial-panel-dark" data-reveal>
+          <p class="section-label text-brand-200">Review framework</p>
+          <h2 class="mt-3 font-display text-display-xs text-white">Every recommendation has to clear an institutional bar.</h2>
+          <div class="mt-6 space-y-4">
+            <div class="article-rail-card border border-white/10 bg-white/5">
+              <p class="label text-brand-200">01</p>
+              <p class="value text-white">Privacy and compliance fit, including FERPA and COPPA signals.</p>
+            </div>
+            <div class="article-rail-card border border-white/10 bg-white/5">
+              <p class="label text-brand-200">02</p>
+              <p class="value text-white">Classroom and administrative usefulness in real school workflows.</p>
+            </div>
+            <div class="article-rail-card border border-white/10 bg-white/5">
+              <p class="label text-brand-200">03</p>
+              <p class="value text-white">Implementation readiness, board communication, and procurement confidence.</p>
+            </div>
+          </div>
+          <a href="/methodology/" class="btn-secondary mt-6">Review the methodology</a>
+        </div>
+      </div>
+
+      <div class="mt-12 grid gap-4 md:grid-cols-4" data-reveal-stagger>
+        <div class="kpi-card">
+          <p class="kpi-value">{allTools.length}</p>
+          <p class="kpi-caption">Active tool reviews with ratings, pricing, and compliance context.</p>
+        </div>
+        <div class="kpi-card">
+          <p class="kpi-value">{avgRating}</p>
+          <p class="kpi-caption">Average rating across the current tool library.</p>
+        </div>
+        <div class="kpi-card">
+          <p class="kpi-value">{allPolicies.length + allGuides.length}</p>
+          <p class="kpi-caption">Policy and implementation resources to support rollout decisions.</p>
+        </div>
+        <div class="kpi-card">
+          <p class="kpi-value">Tues</p>
+          <p class="kpi-caption">A concise weekly briefing for leaders who need signal, not noise.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-shell-tight">
+    <div class="container-full">
+      <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_1.2fr]">
+        <div class="editorial-panel" data-reveal>
+          <p class="section-label">Institutional promise</p>
+          <h2 class="mt-3 font-display text-display-xs text-ink-950">Built for decision-makers who need judgment, not hype.</h2>
+          <p class="mt-4 max-w-xl text-base leading-8 text-ink-500">
+            Most AI sites speak to teachers or vendors. AIForEdu is designed for the people accountable for policy, procurement, governance, and responsible implementation across an entire school or district.
+          </p>
+        </div>
+        <div class="grid gap-4 md:grid-cols-3" data-reveal-stagger>
+          <div class="info-card">
+            <p class="label">Policy</p>
+            <p class="value">Board-ready templates and governance language that reduce ambiguity.</p>
+          </div>
+          <div class="info-card">
+            <p class="label">Procurement</p>
+            <p class="value">Side-by-side reviews to help teams evaluate fit, risk, and value.</p>
+          </div>
+          <div class="info-card">
+            <p class="label">Implementation</p>
+            <p class="value">Practical rollout guidance for school leaders turning pilots into policy.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-shell">
+    <div class="container-full">
+      <div class="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
+        <div data-reveal>
+          <p class="section-label">Coverage map</p>
+          <h2 class="mt-3 font-display text-display-sm text-ink-950">The library is organized around real school decisions.</h2>
+          <p class="mt-4 max-w-lg text-base leading-8 text-ink-500">
+            Categories are structured around leadership questions: what solves a workflow problem, what introduces policy or procurement risk, and what is mature enough for district use.
+          </p>
+        </div>
+
+        <div class="grid gap-4 md:grid-cols-2" data-reveal-stagger>
+          {categories.map((cat) => (
+            <a href={`/tools/?category=${cat.slug}`} class="index-card">
+              <p class="label">{String(cat.count).padStart(2, '0')} reviews</p>
+              <h3 class="mt-4 font-display text-display-xs text-ink-950">{cat.name}</h3>
+              <p class="mt-3 text-sm leading-7 text-ink-500">Explore the tools, pricing models, and implementation fit within this category.</p>
+              <div class="mt-6 btn-quiet">Open category</div>
             </a>
           ))}
         </div>
@@ -172,21 +155,21 @@ const categories = [
     </div>
   </section>
 
-  <!-- FEATURED TOOLS -->
   {displayTools.length > 0 && (
-    <section class="py-24 md:py-32 bg-surface-50 border-y border-neutral-100">
-      <div class="container-wide">
-        <div class="flex items-end justify-between gap-4 mb-10" data-reveal>
+    <section class="section-shell border-y border-paper-300/90 bg-paper-100/50">
+      <div class="container-full">
+        <div class="mb-10 flex flex-col gap-5 md:flex-row md:items-end md:justify-between" data-reveal>
           <div>
-            <p class="section-label">Top rated</p>
-            <h2 class="text-display-sm text-neutral-900">Featured tools</h2>
+            <p class="section-label">Editors' picks</p>
+            <h2 class="mt-3 font-display text-display-sm text-ink-950">Featured reviews</h2>
+            <p class="mt-4 max-w-2xl text-base leading-8 text-ink-500">
+              Start with the tools school leaders are most likely to evaluate first: high-visibility platforms with direct implications for privacy, classroom fit, and district readiness.
+            </p>
           </div>
-          <a href="/tools/" class="text-sm text-neutral-400 hover:text-neutral-900 transition-colors flex items-center gap-1 shrink-0">
-            All tools
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
-          </a>
+          <a href="/tools/" class="btn-secondary">Browse all reviews</a>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" data-reveal-stagger>
+
+        <div class="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3" data-reveal-stagger>
           {displayTools.map(tool => (
             <ToolCard
               title={tool.data.title}
@@ -205,82 +188,131 @@ const categories = [
     </section>
   )}
 
-  <!-- HOW IT WORKS — horizontal numbered -->
-  <section class="py-24 md:py-32">
-    <div class="container-wide">
-      <div class="mb-14" data-reveal>
-        <p class="section-label">How it works</p>
-        <h2 class="text-display-sm text-neutral-900">Three steps to<br />AI-ready schools</h2>
-      </div>
-      <div class="grid md:grid-cols-3 gap-12" data-reveal-stagger>
-        <div>
-          <span class="text-5xl font-extrabold text-neutral-100">01</span>
-          <h3 class="mt-3 font-semibold text-neutral-900">Browse & compare</h3>
-          <p class="mt-2 text-sm text-neutral-400 leading-relaxed">Search 50+ independently reviewed AI tools. Filter by grade, subject, compliance, and price.</p>
+  <section class="section-shell">
+    <div class="container-full">
+      <div class="grid gap-6 lg:grid-cols-3" data-reveal-stagger>
+        <div class="editorial-panel">
+          <p class="label">Step 01</p>
+          <h3 class="mt-4 font-display text-display-xs text-ink-950">Screen the market intelligently.</h3>
+          <p class="mt-3 text-sm leading-7 text-ink-500">Use the review library to narrow choices before your team spends time on demos, pilots, and board questions.</p>
         </div>
-        <div>
-          <span class="text-5xl font-extrabold text-neutral-100">02</span>
-          <h3 class="mt-3 font-semibold text-neutral-900">Get the policies</h3>
-          <p class="mt-2 text-sm text-neutral-400 leading-relaxed">Download free templates or grab the full Policy Kit to present to your board with confidence.</p>
+        <div class="editorial-panel">
+          <p class="label">Step 02</p>
+          <h3 class="mt-4 font-display text-display-xs text-ink-950">Align governance and policy.</h3>
+          <p class="mt-3 text-sm leading-7 text-ink-500">Move from exploration to institutional readiness with practical policy language and adoption frameworks.</p>
         </div>
-        <div>
-          <span class="text-5xl font-extrabold text-neutral-100">03</span>
-          <h3 class="mt-3 font-semibold text-neutral-900">Implement with guides</h3>
-          <p class="mt-2 text-sm text-neutral-400 leading-relaxed">Follow step-by-step guides and the Readiness Workbook to roll out AI responsibly.</p>
+        <div class="editorial-panel">
+          <p class="label">Step 03</p>
+          <h3 class="mt-4 font-display text-display-xs text-ink-950">Implement with confidence.</h3>
+          <p class="mt-3 text-sm leading-7 text-ink-500">Roll out AI in a way that is legible to leadership teams, staff, families, and governing boards.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- FREE TEMPLATE -->
-  <section id="free-template" class="py-24 md:py-32 bg-neutral-950 text-white">
-    <div class="container-wide">
-      <div class="grid md:grid-cols-2 gap-16 items-center">
-        <div data-reveal>
-          <p class="text-xs font-semibold uppercase tracking-[0.15em] text-neutral-500 mb-4">Free download</p>
-          <h2 class="text-display-sm text-white">AI Acceptable-Use Policy Template</h2>
-          <p class="mt-5 text-neutral-400 leading-relaxed">Board-ready, 12-section policy covering FERPA, COPPA, academic integrity, and more. Used by 200+ districts.</p>
-          <ul class="mt-6 space-y-2">
-            {['FERPA & COPPA compliant', 'Board presentation ready', 'Editable Google Docs format'].map(item => (
-              <li class="flex items-center gap-2.5 text-sm text-neutral-300">
-                <svg class="w-4 h-4 text-brand-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
-                {item}
-              </li>
-            ))}
-          </ul>
+  <section id="free-template" class="section-shell">
+    <div class="container-full">
+      <div class="grid gap-8 lg:grid-cols-[0.95fr_1.05fr]">
+        <div class="cta-panel-dark" data-reveal>
+          <p class="section-label text-brand-200">Free flagship resource</p>
+          <h2 class="mt-3 font-display text-display-sm text-white">AI acceptable-use policy template</h2>
+          <p class="mt-4 max-w-xl text-base leading-8 text-ink-200">
+            A board-ready starting point covering acceptable use, privacy, academic integrity, and implementation guardrails for school systems beginning serious AI adoption work.
+          </p>
+          <div class="mt-6 grid gap-3 sm:grid-cols-2">
+            <div class="article-rail-card border border-white/10 bg-white/5">
+              <p class="label text-brand-200">Included</p>
+              <p class="value text-white">Editable language for district and school adaptation.</p>
+            </div>
+            <div class="article-rail-card border border-white/10 bg-white/5">
+              <p class="label text-brand-200">Focus</p>
+              <p class="value text-white">FERPA, COPPA, integrity, and governance alignment.</p>
+            </div>
+          </div>
         </div>
+
         <div
-          x-data="{ email: '', done: false }"
-          class="bg-neutral-900 rounded-xl p-6 md:p-8 border border-neutral-800"
+          x-data="{ email: '', role: '', districtSize: '', organization: '', downloadUrl: '', done: false, error: '', successTitle: 'Resource ready', successMessage: 'Open the resource now.' }"
+          class="cta-panel"
           data-reveal
         >
           <template x-if="!done">
             <form
-              class="space-y-4"
+              class="space-y-5"
               @submit.prevent="
+                error = '';
                 const res = await fetch('/api/free-download', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ email, resource: 'ai-policy-template' })
+                  body: JSON.stringify({ email, role, districtSize, organization, useCase: 'homepage-policy-template', resource: 'ai-policy-template' })
                 });
-                if (res.ok) done = true;
+                if (res.ok) {
+                  const d = await res.json();
+                  downloadUrl = d.downloadUrl || '';
+                  successTitle = d.successTitle || successTitle;
+                  successMessage = d.successMessage || successMessage;
+                  done = true;
+                } else {
+                  const d = await res.json();
+                  error = d.error || 'Something went wrong';
+                }
               "
             >
               <div>
-                <label class="block text-sm font-medium text-neutral-300 mb-1.5">Work email</label>
-                <input type="email" x-model="email" placeholder="you@school.edu" required class="w-full px-3.5 py-2.5 rounded-lg bg-neutral-800 border border-neutral-700 text-white text-sm placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-brand-600" />
+                <p class="section-label">Download access</p>
+                <h3 class="mt-3 font-display text-display-xs text-ink-950">Get instant access to the starter.</h3>
+                <p class="mt-3 max-w-xl text-sm leading-7 text-ink-500">Enter your work email and a little context. We will unlock the resource immediately and optionally send follow-up guidance if email delivery is configured.</p>
               </div>
-              <button type="submit" class="btn-brand w-full justify-center">
-                Download free template
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
+              <div class="grid gap-4 md:grid-cols-2">
+                <div>
+                  <label class="field-label">Work email</label>
+                  <input type="email" x-model="email" placeholder="you@school.edu" required class="input" />
+                </div>
+                <div>
+                  <label class="field-label">Organization</label>
+                  <input type="text" x-model="organization" placeholder="District or school" class="input" />
+                </div>
+              </div>
+              <div class="grid gap-4 md:grid-cols-2">
+                <div>
+                  <label class="field-label">Role</label>
+                  <select x-model="role" class="select">
+                    <option value="">Select your role</option>
+                    <option value="superintendent">Superintendent</option>
+                    <option value="principal">Principal or school leader</option>
+                    <option value="district-innovation">District innovation lead</option>
+                    <option value="technology">Technology / IT leader</option>
+                    <option value="curriculum">Curriculum / instruction lead</option>
+                    <option value="teacher">Teacher</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="field-label">District size</label>
+                  <select x-model="districtSize" class="select">
+                    <option value="">Select size</option>
+                    <option value="single-school">Single school</option>
+                    <option value="small-district">Small district</option>
+                    <option value="mid-size-district">Mid-size district</option>
+                    <option value="large-district">Large district</option>
+                    <option value="state-or-network">State / network</option>
+                  </select>
+                </div>
+              </div>
+              <button type="submit" class="btn-primary w-full justify-center">
+                Unlock the resource
               </button>
-              <p class="text-[11px] text-neutral-500 text-center">No spam. Instant download link.</p>
+              <p x-show="error" x-text="error" class="text-sm text-red-600"></p>
+              <p class="small-note">No spam. Intended for school and district use.</p>
             </form>
           </template>
           <template x-if="done">
-            <div class="text-center py-6">
-              <p class="font-semibold text-white">Check your inbox!</p>
-              <p class="text-sm text-neutral-400 mt-1">The template is on its way.</p>
+            <div class="py-6">
+              <p class="section-label">Request received</p>
+              <p class="mt-3 font-display text-display-xs text-ink-950" x-text="successTitle">Resource ready.</p>
+              <p class="mt-2 text-sm leading-7 text-ink-500" x-text="successMessage">Open the resource now.</p>
+              <template x-if="downloadUrl">
+                <a :href="downloadUrl" class="btn-primary mt-5 inline-flex">Open resource</a>
+              </template>
             </div>
           </template>
         </div>
@@ -288,19 +320,18 @@ const categories = [
     </div>
   </section>
 
-  <!-- PRODUCTS -->
-  <section class="py-24 md:py-32">
-    <div class="container-wide">
-      <div class="mb-14" data-reveal>
-        <p class="section-label">Premium</p>
-        <h2 class="text-display-sm text-neutral-900">Ready-to-implement<br />toolkits</h2>
-        <p class="mt-4 text-neutral-400 max-w-md">Save weeks of work. Each kit is vetted by education consultants and used by hundreds of districts.</p>
+  <section class="section-shell border-y border-paper-300/90 bg-paper-100/50">
+    <div class="container-full">
+      <div class="mb-10 max-w-2xl" data-reveal>
+        <p class="section-label">Premium resources</p>
+        <h2 class="mt-3 font-display text-display-sm text-ink-950">Operational shortcuts for teams who need to move faster.</h2>
+        <p class="mt-4 text-base leading-8 text-ink-500">These toolkits package policy, implementation, and evaluation materials into ready-to-use working sets for district and school leadership teams.</p>
       </div>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-5" data-reveal-stagger>
+      <div class="grid grid-cols-1 gap-5 md:grid-cols-3" data-reveal-stagger>
         <ProductCard
           title="AI Policy Kit"
           price="$29"
-          badge="Best Seller"
+          badge="Most adopted"
           popular={true}
           description="Complete policy bundle for district-wide AI adoption."
           features={['5 editable policy templates', 'Board presentation deck', 'Parent communication guide', 'Staff training checklist', 'FERPA compliance matrix']}
@@ -316,34 +347,33 @@ const categories = [
         <ProductCard
           title="Tool Vetting Pack"
           price="$39"
-          badge="Most Comprehensive"
+          badge="Most comprehensive"
           description="Everything you need to evaluate and approve AI tools."
-          features={['Vendor evaluation rubric', 'Security questionnaire', 'Pilot program framework', '50+ pre-vetted tool profiles', 'Comparison spreadsheet']}
+          features={['Vendor evaluation rubric', 'Security questionnaire', 'Pilot program framework', 'Tool profile tracker', 'Comparison spreadsheet']}
           href="/products/tool-vetting-pack/"
         />
       </div>
     </div>
   </section>
 
-  <!-- TESTIMONIAL — single, large, editorial -->
-  <section class="py-24 md:py-32 border-y border-neutral-100">
-    <div class="container-narrow text-center" data-reveal>
-      <svg class="w-10 h-10 text-neutral-200 mx-auto mb-8" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" /></svg>
-      <blockquote class="text-xl md:text-2xl font-medium text-neutral-900 leading-relaxed max-w-2xl mx-auto">
-        AIForEdu saved our team months of research. The policy templates alone were worth every penny — our board approved them in a single meeting.
-      </blockquote>
-      <div class="mt-8">
-        <p class="text-sm font-semibold text-neutral-900">Dr. Sarah Kim</p>
-        <p class="text-xs text-neutral-400 mt-0.5">Superintendent, Westfield USD</p>
+  <section class="section-shell">
+    <div class="container-narrow" data-reveal>
+      <div class="cta-panel text-center">
+        <p class="section-label">Field signal</p>
+        <blockquote class="mt-4 font-display text-[1.9rem] leading-tight text-ink-950 md:text-display-xs">
+          The strongest version of this product is not just a content library. It is a decision-support system that helps leadership teams move from curiosity to policy, procurement, and rollout with more confidence.
+        </blockquote>
+        <div class="mt-6">
+          <p class="font-semibold text-ink-900">AIForEdu editorial position</p>
+          <p class="small-note mt-1">Authority should come from clear method, transparent limits, and useful artifacts.</p>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- NEWSLETTER -->
-  <section class="py-24 md:py-32">
+  <section class="section-shell">
     <div class="container-narrow" data-reveal>
-      <NewsletterSignup variant="hero" />
+      <NewsletterSignup variant="hero" heading="Get a sharper read on school AI each week" subheading="One concise briefing covering a tool, a policy signal, and one practical action for leadership teams." />
     </div>
   </section>
-
 </BaseLayout>

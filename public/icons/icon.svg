@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">AIForEdu icon</title>
+  <desc id="desc">Abstract crest combining a school building and circuit pattern.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0d1320" />
+      <stop offset="100%" stop-color="#2643aa" />
+    </linearGradient>
+    <linearGradient id="pulse" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#dfe6ff" />
+      <stop offset="100%" stop-color="#eef6f1" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="104" fill="url(#bg)" />
+  <path d="M256 102l142 72v42H114v-42l142-72z" fill="#f5efe4" opacity=".95" />
+  <path d="M154 221h204v38H154zM170 275h42v103h-42zM235 275h42v103h-42zM300 275h42v103h-42z" fill="#f5efe4" />
+  <path d="M132 390h248v26H132z" fill="#d9dfeb" />
+  <path d="M256 144v66m-92 40h184" fill="none" stroke="#7b90ff" stroke-width="18" stroke-linecap="round" opacity=".55" />
+  <circle cx="164" cy="250" r="12" fill="#7b90ff" />
+  <circle cx="256" cy="210" r="12" fill="#7b90ff" />
+  <circle cx="348" cy="250" r="12" fill="#7b90ff" />
+  <path d="M212 338c26-16 63-16 89 0" fill="none" stroke="url(#pulse)" stroke-width="18" stroke-linecap="round" />
+</svg>

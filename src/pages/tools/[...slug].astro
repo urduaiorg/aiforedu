@@ -11,76 +11,129 @@ export async function getStaticPaths() {
 
 const { tool } = Astro.props;
 const { Content } = await tool.render();
-const { title, description, category, pricing, priceRange, rating, ferpaCompliant, coppaCompliant, gradeLevel, bestFor, website, affiliate, lastReviewed } = tool.data;
+const { title, description, category, pricing, priceRange, rating, ferpaCompliant, coppaCompliant, gradeLevel, bestFor, website, affiliate, lastReviewed, reviewedBy, reviewFrameworkVersion, evidenceLevel, verificationNotes, rubric } = tool.data;
 
 const stars = '★'.repeat(Math.round(rating)) + '☆'.repeat(5 - Math.round(rating));
 const trackingUrl = affiliate ? `/api/affiliate/${affiliate.slug}` : website;
+const suggestedProductHref = '/products/tool-vetting-pack/';
+const suggestedProductLabel = 'See the vetting pack';
 ---
 
 <BaseLayout title={title} description={description}>
-  <article class="py-12">
-    <div class="container-narrow">
-      <!-- Breadcrumb -->
-      <nav class="text-sm text-gray-500 mb-6">
-        <a href="/" class="hover:text-primary-600">Home</a> →
-        <a href="/tools/" class="hover:text-primary-600">Tool Reviews</a> →
-        <span class="text-gray-900">{title}</span>
+  <article class="section-shell-tight">
+    <div class="container-full">
+      <nav class="breadcrumbs">
+        <a href="/">Home</a>
+        <span class="divider-dot"></span>
+        <a href="/tools/">Tool reviews</a>
+        <span class="divider-dot"></span>
+        <span>{title}</span>
       </nav>
 
-      <!-- Header -->
-      <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
-        <div>
-          <h1 class="font-display text-4xl font-bold text-gray-900">{title}</h1>
-          <p class="mt-3 text-lg text-gray-600">{description}</p>
-          <div class="mt-4 flex flex-wrap items-center gap-3">
-            <span class="text-yellow-500 text-lg" title={`${rating}/5`}>{stars} <span class="text-gray-600 text-sm">({rating}/5)</span></span>
-            <ComplianceBadge ferpa={ferpaCompliant} coppa={coppaCompliant} />
-            <span class="badge-blue capitalize">{pricing}{priceRange ? ` — ${priceRange}` : ''}</span>
+      <div class="mt-6 article-frame">
+        <div class="article-grid">
+          <div>
+            <p class="section-label">Independent review</p>
+            <h1 class="mt-3 page-title">{title}</h1>
+            <p class="page-lede">{description}</p>
+
+            <div class="mt-6 flex flex-wrap items-center gap-3">
+              <span class="badge-blue capitalize">{pricing}{priceRange ? ` — ${priceRange}` : ''}</span>
+              <span class="badge-yellow" title={`${rating}/5`}>{stars} {rating}/5</span>
+              <ComplianceBadge ferpa={ferpaCompliant} coppa={coppaCompliant} />
+            </div>
+
+            <div class="mt-8 info-grid">
+              <div class="info-card">
+                <p class="label">Category</p>
+                <p class="value capitalize">{category.replace('-', ' ')}</p>
+              </div>
+              <div class="info-card">
+                <p class="label">Best fit</p>
+                <p class="value">{bestFor}</p>
+              </div>
+              <div class="info-card">
+                <p class="label">Grade levels</p>
+                <p class="value">{gradeLevel.join(', ')}</p>
+              </div>
+              <div class="info-card">
+                <p class="label">Last reviewed</p>
+                <p class="value">{lastReviewed.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</p>
+              </div>
+              <div class="info-card">
+                <p class="label">Reviewed by</p>
+                <p class="value">{reviewedBy}</p>
+              </div>
+              <div class="info-card">
+                <p class="label">Evidence level</p>
+                <p class="value capitalize">{evidenceLevel.replace('-', ' ')}</p>
+              </div>
+              <div class="info-card">
+                <p class="label">Framework</p>
+                <p class="value">AIForEdu {reviewFrameworkVersion}</p>
+              </div>
+            </div>
+
+            <div class="article-frame mt-8">
+              <p class="section-label">Score breakdown</p>
+              <div class="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                <div class="info-card">
+                  <p class="label">Privacy</p>
+                  <p class="value">{rubric.privacy}/5</p>
+                </div>
+                <div class="info-card">
+                  <p class="label">Instructional value</p>
+                  <p class="value">{rubric.instructionalValue}/5</p>
+                </div>
+                <div class="info-card">
+                  <p class="label">Implementation</p>
+                  <p class="value">{rubric.implementation}/5</p>
+                </div>
+                <div class="info-card">
+                  <p class="label">Transparency</p>
+                  <p class="value">{rubric.transparency}/5</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="article-frame mt-8">
+              <p class="section-label">Verification notes</p>
+              <div class="mt-5 space-y-4">
+                {verificationNotes.map((note) => (
+                  <div class="info-card">
+                    <p class="value">{note}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div class="prose-content mt-12">
+              <Content />
+            </div>
           </div>
-        </div>
-        <a href={trackingUrl} target="_blank" rel="noopener" class="btn-primary shrink-0">
-          Visit {title} →
-        </a>
-      </div>
 
-      <!-- Quick facts -->
-      <div class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div class="bg-gray-50 rounded-lg p-4">
-          <p class="text-xs text-gray-500 uppercase tracking-wider">Category</p>
-          <p class="mt-1 font-semibold text-gray-900 capitalize">{category.replace('-', ' ')}</p>
-        </div>
-        <div class="bg-gray-50 rounded-lg p-4">
-          <p class="text-xs text-gray-500 uppercase tracking-wider">Best For</p>
-          <p class="mt-1 font-semibold text-gray-900">{bestFor}</p>
-        </div>
-        <div class="bg-gray-50 rounded-lg p-4">
-          <p class="text-xs text-gray-500 uppercase tracking-wider">Grade Levels</p>
-          <p class="mt-1 font-semibold text-gray-900">{gradeLevel.join(', ')}</p>
-        </div>
-        <div class="bg-gray-50 rounded-lg p-4">
-          <p class="text-xs text-gray-500 uppercase tracking-wider">Last Reviewed</p>
-          <p class="mt-1 font-semibold text-gray-900">{lastReviewed.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</p>
+          <aside class="article-rail">
+            <div class="article-rail-card">
+              <p class="label">Vendor access</p>
+              <p class="mt-3 text-sm leading-7 text-ink-500">Visit the vendor site when you are ready to evaluate the product in detail.</p>
+              <a href={trackingUrl} target="_blank" rel="noopener" class="btn-primary mt-5 w-full justify-center">Visit {title}</a>
+            </div>
+            <div class="article-rail-card">
+              <p class="label">Leadership note</p>
+              <p class="mt-3 text-sm leading-7 text-ink-500">Need a stronger procurement process? Use the premium vetting materials to evaluate risk, readiness, and board communication.</p>
+              <a href={suggestedProductHref} class="btn-secondary mt-5 w-full justify-center">{suggestedProductLabel}</a>
+            </div>
+            <div class="article-rail-card">
+              <p class="label">Methodology</p>
+              <p class="mt-3 text-sm leading-7 text-ink-500">Read how AIForEdu distinguishes vendor claims, document review, and operational observation.</p>
+              <a href="/methodology/" class="btn-secondary mt-5 w-full justify-center">Review the method</a>
+            </div>
+          </aside>
         </div>
       </div>
 
-      <!-- Content -->
-      <div class="mt-12 prose-content">
-        <Content />
-      </div>
-
-      <!-- CTA -->
-      <div class="mt-12 bg-primary-50 rounded-xl p-8 text-center">
-        <h3 class="font-display text-xl font-bold text-gray-900">Ready to try {title}?</h3>
-        <p class="mt-2 text-gray-600">Click below to visit their site. Need help vetting it for your district?</p>
-        <div class="mt-4 flex flex-col sm:flex-row gap-3 justify-center">
-          <a href={trackingUrl} target="_blank" rel="noopener" class="btn-primary">Visit {title}</a>
-          <a href="/products/tool-vetting-pack/" class="btn-secondary">Get the Vetting Pack</a>
-        </div>
-      </div>
-
-      <!-- Newsletter -->
-      <div class="mt-12">
-        <NewsletterSignup variant="banner" heading="Get tool reviews like this every week" subheading="Join school leaders who stay ahead with our Tuesday AI briefing." />
+      <div class="mt-10">
+        <NewsletterSignup variant="banner" heading="Get tool reviews like this every week" subheading="Join school leaders who stay ahead with one concise Tuesday briefing." />
       </div>
     </div>
   </article>
