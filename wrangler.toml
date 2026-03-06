@@ -7,15 +7,19 @@ directory = "./dist"
 
 [vars]
 SITE_URL = "https://aiforedu.ai"
-BEEHIIV_PUBLICATION_ID = ""  # Add your Beehiiv publication ID
-LEMON_SQUEEZY_STORE_ID = ""  # Add your LemonSqueezy store ID
-TURNSTILE_SECRET_KEY = ""    # Add your Turnstile secret key
 
-[[d1_databases]]
-binding = "DB"
-database_name = "aiforedu-db"
-database_id = ""  # Add your D1 database ID after creating it
+# Uncomment and fill these after creating the services:
+# BEEHIIV_PUBLICATION_ID = ""
+# LEMON_SQUEEZY_STORE_ID = ""
+# TURNSTILE_SECRET_KEY = ""
 
-[[r2_buckets]]
-binding = "ASSETS"
-bucket_name = "aiforedu-assets"
+# Uncomment after running: wrangler d1 create aiforedu-db
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "aiforedu-db"
+# database_id = "PASTE_YOUR_ID_HERE"
+
+# Uncomment after enabling R2 in Cloudflare Dashboard
+# [[r2_buckets]]
+# binding = "ASSETS"
+# bucket_name = "aiforedu-assets"
