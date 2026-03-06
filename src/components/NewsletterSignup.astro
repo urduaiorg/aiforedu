@@ -5,7 +5,7 @@ interface Props {
   subheading?: string;
 }
 
-const { variant = 'inline', heading = 'Get the Weekly AI-in-Ed Briefing', subheading = 'One tool review, one policy tip, and one action step for school leadership teams every Tuesday.' } = Astro.props;
+const { variant = 'inline', heading = 'Get the Weekly AI-in-Ed Briefing', subheading = 'One tool review, one policy tip, and one action step for educators and institutions every Tuesday.' } = Astro.props;
 ---
 
 <div class:list={[
@@ -76,7 +76,7 @@ const { variant = 'inline', heading = 'Get the Weekly AI-in-Ed Briefing', subhea
 
       <p x-show="error" x-text="error" x-transition class:list={['text-xs', variant === 'hero' ? 'text-red-200' : 'text-red-600']}></p>
       <p class:list={['text-xs leading-6', variant === 'hero' ? 'text-ink-300' : 'text-ink-500']}>
-        Intended for school and district professionals. We only ask for your email and use it for briefing delivery or reply-path follow-up.
+        Intended for educators and education teams. We only ask for your email and use it for briefing delivery or reply-path follow-up.
       </p>
       <div class="flex flex-wrap gap-3 text-[11px] uppercase tracking-[0.16em]">
         <span class:list={[variant === 'hero' ? 'text-ink-300' : 'text-ink-400']}>No spam</span>

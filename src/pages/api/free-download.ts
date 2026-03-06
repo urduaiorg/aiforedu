@@ -13,14 +13,14 @@ const JSON_HEADERS = {
   'X-Robots-Tag': 'noindex, nofollow',
 };
 
-const resourceMap: Record<string, { downloadUrl: string; productSlug: string }> = {
+const resourceMap: Record<string, { downloadUrl: string; interestSlug: string }> = {
   'ai-policy-template': {
     downloadUrl: '/downloads/ai-policy-template/',
-    productSlug: 'policy-kit',
+    interestSlug: 'ai-policy-template',
   },
   'policy-template': {
     downloadUrl: '/downloads/ai-policy-template/',
-    productSlug: 'policy-kit',
+    interestSlug: 'ai-policy-template',
   },
 };
 
@@ -58,7 +58,7 @@ export const POST: APIRoute = async ({ request }) => {
       // Track product interest
       await env.DB.prepare(
         'INSERT INTO product_interest (email, product_slug, action, created_at) VALUES (?, ?, ?, ?)'
-      ).bind(email, resourceConfig.productSlug, 'download', new Date().toISOString()).run();
+      ).bind(email, resourceConfig.interestSlug, 'download', new Date().toISOString()).run();
 
       try {
         await env.DB.prepare(

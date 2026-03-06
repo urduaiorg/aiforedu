@@ -14,14 +14,14 @@ interface Props {
 
 const {
   title,
-  description = 'AI intelligence for school leadership: independent tool reviews, policy resources, and implementation guidance for K-12 teams.',
+  description = 'Independent AI-in-education guidance for educators and institutions worldwide: tool reviews, policies, frameworks, and practical implementation support.',
   ogImage = '/og-default.svg',
   canonical,
   ogType = 'website',
   structuredData,
   noindex = false,
 } = Astro.props;
-const fullTitle = title === 'Home' ? 'AIForEdu — AI Tools, Policies & Guides for School Leaders' : `${title} | AIForEdu`;
+const fullTitle = title === 'Home' ? 'AIForEdu — The AI Library Built for Educators' : `${title} | AIForEdu`;
 const canonicalURL = canonical || new URL(Astro.url.pathname, Astro.site).href;
 const siteSchemas = [organizationSchema(), websiteSchema()];
 const pageSchemas = structuredData ? (Array.isArray(structuredData) ? structuredData : [structuredData]) : [];
@@ -29,9 +29,9 @@ const jsonLd = toJsonLd([...siteSchemas, ...pageSchemas]);
 const navItems = [
   { href: '/tools/', label: 'Tools' },
   { href: '/compare/', label: 'Compare' },
-  { href: '/policy/', label: 'Policies' },
+  { href: '/policy/', label: 'Policies & Frameworks' },
   { href: '/guides/', label: 'Guides' },
-  { href: '/products/', label: 'Products' },
+  { href: '/resources/', label: 'Resources' },
 ];
 ---
 
@@ -71,7 +71,7 @@ const navItems = [
     <header class="fixed inset-x-0 top-0 z-50" x-data="{ open: false }">
       <div class="surface-rule bg-paper-50/80 backdrop-blur-xl">
         <div class="container-full flex items-center justify-between py-3 text-[11px] font-medium uppercase tracking-[0.18em] text-ink-400">
-          <p>Independent AI research for K-12 school leadership</p>
+          <p>Independent AI research for educators worldwide</p>
           <a href="/newsletter/" class="hidden md:inline-flex items-center gap-2 text-ink-500 hover:text-ink-900">
             Weekly briefing
             <span class="divider-dot"></span>
@@ -83,7 +83,7 @@ const navItems = [
         <nav class="container-full flex items-center justify-between py-4">
           <a href="/" class="flex items-center gap-3">
             <span class="rounded-full border border-paper-300 bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-ink-500">AIForEdu</span>
-            <span class="hidden text-sm text-ink-400 md:inline">School AI intelligence, policy, and procurement guidance</span>
+            <span class="hidden text-sm text-ink-400 md:inline">AI guidance, tool reviews, and policy frameworks for educators and institutions</span>
           </a>
 
           <div class="hidden items-center gap-6 md:flex">
@@ -102,7 +102,7 @@ const navItems = [
 
           <div class="hidden items-center gap-3 md:flex">
             <a href="/methodology/" class="btn-secondary">Methodology</a>
-            <a href="/products/" class="btn-primary">Premium resources</a>
+            <a href="/newsletter/" class="btn-primary">Subscribe free</a>
           </div>
 
           <button @click="open = !open" class="rounded-full border border-paper-300 bg-white p-2 text-ink-700 md:hidden">
@@ -121,7 +121,7 @@ const navItems = [
           ))}
           <div class="grid grid-cols-2 gap-3 pt-2">
             <a href="/methodology/" class="btn-secondary w-full">Method</a>
-            <a href="/products/" class="btn-primary w-full">Premium</a>
+            <a href="/newsletter/" class="btn-primary w-full">Subscribe</a>
           </div>
         </div>
       </div>
@@ -138,9 +138,9 @@ const navItems = [
         <div class="grid gap-10 lg:grid-cols-[1.3fr_repeat(3,minmax(0,1fr))]">
           <div class="max-w-md">
             <p class="eyebrow">AIForEdu</p>
-            <h2 class="mt-6 font-display text-display-xs text-ink-950">A more rigorous lens on AI adoption for schools.</h2>
+            <h2 class="mt-6 font-display text-display-xs text-ink-950">The independent AI-in-education library for educators worldwide.</h2>
             <p class="mt-4 text-base leading-8 text-ink-500">
-              We help school leaders evaluate tools, policy risk, and implementation decisions with more clarity and less vendor noise.
+              We help educators and institutions evaluate tools, policy risk, and implementation decisions with more clarity and less vendor noise.
             </p>
             <div class="mt-6 flex flex-wrap gap-3">
               <span class="metric-chip">Tool reviews</span>
@@ -160,19 +160,21 @@ const navItems = [
           </div>
 
           <div>
-            <p class="section-label">Programs</p>
+            <p class="section-label">Free Resources</p>
             <div class="mt-4 space-y-3">
-              <a href="/products/" class="footer-link block">Premium resources</a>
+              <a href="/downloads/ai-policy-template/" class="footer-link block">Free policy template</a>
+              <a href="/policy/ferpa-ai-compliance-checklist/" class="footer-link block">FERPA checklist</a>
+              <a href="/resources/" class="footer-link block">Resources hub</a>
+              <a href="/newsletter/" class="footer-link block">Newsletter</a>
               <a href="/methodology/" class="footer-link block">Methodology</a>
-              <a href="/newsletter/" class="footer-link block">Weekly briefing</a>
-              <a href="/about/" class="footer-link block">About and mission</a>
-              <a href="/contact/" class="footer-link block">Contact</a>
             </div>
           </div>
 
           <div>
-            <p class="section-label">Governance</p>
+            <p class="section-label">About</p>
             <div class="mt-4 space-y-3">
+              <a href="/about/" class="footer-link block">About and mission</a>
+              <a href="/contact/" class="footer-link block">Contact</a>
               <a href="/privacy/" class="footer-link block">Privacy</a>
               <a href="/terms/" class="footer-link block">Terms</a>
               <a href="mailto:hello@aiforedu.ai" class="footer-link block">hello@aiforedu.ai</a>

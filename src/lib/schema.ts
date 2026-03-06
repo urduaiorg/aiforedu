@@ -19,7 +19,7 @@ export function organizationSchema() {
     },
     sameAs: ['https://imglocal.com'],
     description:
-      'Independent AI research, policy resources, and implementation guidance for K-12 school leadership teams.',
+      'Independent AI research, policy resources, and implementation guidance for educators and institutions worldwide.',
   };
 }
 
@@ -30,7 +30,7 @@ export function websiteSchema() {
     name: 'AIForEdu',
     url: 'https://aiforedu.ai',
     description:
-      'Independent tool reviews, policy resources, and implementation guidance for K-12 school leadership teams.',
+      'Independent tool reviews, policy resources, and implementation guidance for educators and institutions worldwide.',
     potentialAction: {
       '@type': 'SearchAction',
       target: 'https://aiforedu.ai/tools/',

@@ -2,7 +2,6 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ToolCard from '../components/ToolCard.astro';
 import NewsletterSignup from '../components/NewsletterSignup.astro';
-import ProductCard from '../components/ProductCard.astro';
 import { getCollection } from 'astro:content';
 import { toolCategoryMeta, toolCategoryOrder } from '../data/toolCategories';
 import { editorialSignals, readerQuestions } from '../data/editorial';
@@ -12,6 +11,7 @@ export const prerender = true;
 const allTools = await getCollection('tools');
 const allPolicies = await getCollection('policies');
 const allGuides = await getCollection('guides');
+const allComparisons = await getCollection('comparisons');
 const featuredTools = allTools.filter(t => t.data.featured).slice(0, 6);
 const latestTools = allTools.sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime()).slice(0, 6);
 const displayTools = featuredTools.length > 0 ? featuredTools : latestTools;
@@ -21,16 +21,23 @@ const categoriesByCount = allTools.reduce((acc, tool) => {
   return acc;
 }, {} as Record<string, number>);
 
+const latestLibraryItems = [
+  ...allTools.map((entry) => ({ type: 'Tool review', href: `/tools/${entry.slug}/`, title: entry.data.title, description: entry.data.description, date: entry.data.publishDate })),
+  ...allComparisons.map((entry) => ({ type: 'Comparison', href: `/compare/${entry.slug}/`, title: entry.data.title, description: entry.data.description, date: entry.data.publishDate })),
+  ...allPolicies.map((entry) => ({ type: 'Policy resource', href: `/policy/${entry.slug}/`, title: entry.data.title, description: entry.data.description, date: entry.data.publishDate })),
+  ...allGuides.map((entry) => ({ type: 'Guide', href: `/guides/${entry.slug}/`, title: entry.data.title, description: entry.data.description, date: entry.data.publishDate })),
+]
+  .sort((a, b) => b.date.getTime() - a.date.getTime())
+  .slice(0, 6);
+
 const categories = toolCategoryOrder
-  .filter((slug) => categoriesByCount[slug])
+  .filter((slug) => ['lesson-planning', 'student-facing', 'writing', 'grading', 'higher-ed', 'global'].includes(slug))
   .map((slug) => ({
     slug,
     name: toolCategoryMeta[slug].label,
     description: toolCategoryMeta[slug].description,
-    count: categoriesByCount[slug],
+    count: categoriesByCount[slug] || 0,
   }))
-  .sort((a, b) => b.count - a.count)
-  .slice(0, 6);
 ---
 
 <BaseLayout title="Home">
@@ -38,12 +45,12 @@ const categories = toolCategoryOrder
     <div class="container-full">
       <div class="grid gap-10 lg:grid-cols-[minmax(0,1.15fr)_24rem] lg:items-end">
         <div data-reveal>
-          <p class="eyebrow">For superintendents, principals, and district teams</p>
+          <p class="eyebrow">For educators, institutions, and education systems worldwide</p>
           <h1 class="mt-6 max-w-4xl font-display text-[3.4rem] leading-[0.95] text-ink-950 md:text-hero">
-            The AI intelligence desk for modern school leadership.
+            The AI Library Built for Educators.
           </h1>
           <p class="page-lede max-w-2xl">
-            Independent tool reviews, implementation guidance, and board-ready policy resources designed to help schools adopt AI with more rigor, more speed, and fewer blind spots.
+            Independent tool reviews, policy frameworks, and implementation guidance designed to help educators bring AI into education confidently and responsibly.
           </p>
           <div class="mt-8 flex flex-wrap gap-3">
             <a href="/tools/" class="btn-primary">Explore the library</a>
@@ -59,19 +66,19 @@ const categories = toolCategoryOrder
 
         <div class="editorial-panel-dark" data-reveal>
           <p class="section-label text-brand-200">Review framework</p>
-          <h2 class="mt-3 font-display text-display-xs text-white">Every recommendation has to clear an institutional bar.</h2>
+          <h2 class="mt-3 font-display text-display-xs text-white">Every recommendation has to clear an educational bar.</h2>
           <div class="mt-6 space-y-4">
             <div class="article-rail-card border border-white/10 bg-white/5">
               <p class="label text-brand-200">01</p>
-              <p class="value text-white">Privacy and compliance fit, including FERPA and COPPA signals.</p>
+              <p class="value text-white">Privacy, compliance, and policy fit, including U.S. requirements where relevant.</p>
             </div>
             <div class="article-rail-card border border-white/10 bg-white/5">
               <p class="label text-brand-200">02</p>
-              <p class="value text-white">Classroom and administrative usefulness in real school workflows.</p>
+              <p class="value text-white">Classroom, academic, and institutional usefulness in real education workflows.</p>
             </div>
             <div class="article-rail-card border border-white/10 bg-white/5">
               <p class="label text-brand-200">03</p>
-              <p class="value text-white">Implementation readiness, board communication, and procurement confidence.</p>
+              <p class="value text-white">Implementation readiness across schools, universities, and lower-resource education settings.</p>
             </div>
           </div>
           <a href="/methodology/" class="btn-secondary mt-6">Review the methodology</a>
@@ -89,11 +96,11 @@ const categories = toolCategoryOrder
         </div>
         <div class="kpi-card">
           <p class="kpi-value">{allPolicies.length + allGuides.length}</p>
-          <p class="kpi-caption">Policy and implementation resources to support rollout decisions.</p>
+          <p class="kpi-caption">Policy and implementation resources to support educators and institutions.</p>
         </div>
         <div class="kpi-card">
           <p class="kpi-value">Tues</p>
-          <p class="kpi-caption">A concise weekly briefing for leaders who need signal, not noise.</p>
+          <p class="kpi-caption">A concise weekly briefing for educators who need signal, not noise.</p>
         </div>
       </div>
     </div>
@@ -104,23 +111,23 @@ const categories = toolCategoryOrder
       <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_1.2fr]">
         <div class="editorial-panel" data-reveal>
           <p class="section-label">Institutional promise</p>
-          <h2 class="mt-3 font-display text-display-xs text-ink-950">Built for decision-makers who need judgment, not hype.</h2>
+          <h2 class="mt-3 font-display text-display-xs text-ink-950">Built for educators and institutions who need judgment, not hype.</h2>
           <p class="mt-4 max-w-xl text-base leading-8 text-ink-500">
-            Most AI sites speak to teachers or vendors. AIForEdu is designed for the people accountable for policy, procurement, governance, and responsible implementation across an entire school or district.
+            Most AI sites either chase hype or speak only to one narrow slice of education. AIForEdu is designed to help teachers, school systems, universities, and global education teams make more defensible AI decisions.
           </p>
         </div>
         <div class="grid gap-4 md:grid-cols-3" data-reveal-stagger>
           <div class="info-card">
             <p class="label">Policy</p>
-            <p class="value">Board-ready templates and governance language that reduce ambiguity.</p>
+            <p class="value">Frameworks and templates that reduce ambiguity around AI use, governance, and integrity.</p>
           </div>
           <div class="info-card">
-            <p class="label">Procurement</p>
-            <p class="value">Side-by-side reviews to help teams evaluate fit, risk, and value.</p>
+            <p class="label">Tool evaluation</p>
+            <p class="value">Side-by-side reviews to help educators compare fit, risk, and practical usefulness.</p>
           </div>
           <div class="info-card">
             <p class="label">Implementation</p>
-            <p class="value">Practical rollout guidance for school leaders turning pilots into policy.</p>
+            <p class="value">Practical guidance for turning AI experimentation into clearer institutional practice.</p>
           </div>
         </div>
       </div>
@@ -132,16 +139,16 @@ const categories = toolCategoryOrder
       <div class="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
         <div data-reveal>
           <p class="section-label">Coverage map</p>
-          <h2 class="mt-3 font-display text-display-sm text-ink-950">The library is organized around real school decisions.</h2>
+          <h2 class="mt-3 font-display text-display-sm text-ink-950">The library is organized around real education decisions.</h2>
           <p class="mt-4 max-w-lg text-base leading-8 text-ink-500">
-            Categories are structured around leadership questions: what solves a workflow problem, what introduces policy or procurement risk, and what is mature enough for district use.
+            Categories are structured around practical questions: what solves a workflow problem, what introduces policy or governance risk, and what is useful across different education settings.
           </p>
         </div>
 
         <div class="grid gap-4 md:grid-cols-2" data-reveal-stagger>
           {categories.map((cat) => (
             <a href={`/tools/category/${cat.slug}/`} class="index-card">
-              <p class="label">{String(cat.count).padStart(2, '0')} reviews</p>
+              <p class="label">{cat.count > 0 ? `${String(cat.count).padStart(2, '0')} reviews` : 'Coverage expanding'}</p>
               <h3 class="mt-4 font-display text-display-xs text-ink-950">{cat.name}</h3>
               <p class="mt-3 text-sm leading-7 text-ink-500">{cat.description}</p>
               <div class="mt-6 btn-quiet">Open category</div>
@@ -160,7 +167,7 @@ const categories = toolCategoryOrder
             <p class="section-label">Editors' picks</p>
             <h2 class="mt-3 font-display text-display-sm text-ink-950">Featured reviews</h2>
             <p class="mt-4 max-w-2xl text-base leading-8 text-ink-500">
-              Start with the tools school leaders are most likely to evaluate first: high-visibility platforms with direct implications for privacy, classroom fit, and district readiness.
+              Start with the tools educators and institutions are most likely to evaluate first: high-visibility platforms with direct implications for privacy, classroom fit, and implementation readiness.
             </p>
           </div>
           <a href="/tools/" class="btn-secondary">Browse all reviews</a>
@@ -190,18 +197,18 @@ const categories = toolCategoryOrder
       <div class="grid gap-6 lg:grid-cols-3" data-reveal-stagger>
         <div class="editorial-panel">
           <p class="label">Step 01</p>
-          <h3 class="mt-4 font-display text-display-xs text-ink-950">Screen the market intelligently.</h3>
-          <p class="mt-3 text-sm leading-7 text-ink-500">Use the review library to narrow choices before your team spends time on demos, pilots, and board questions.</p>
+          <h3 class="mt-4 font-display text-display-xs text-ink-950">Understand the landscape quickly.</h3>
+          <p class="mt-3 text-sm leading-7 text-ink-500">Use the review library to narrow choices before your team spends time on demos, pilots, and policy questions.</p>
         </div>
         <div class="editorial-panel">
           <p class="label">Step 02</p>
-          <h3 class="mt-4 font-display text-display-xs text-ink-950">Align governance and policy.</h3>
-          <p class="mt-3 text-sm leading-7 text-ink-500">Move from exploration to institutional readiness with practical policy language and adoption frameworks.</p>
+          <h3 class="mt-4 font-display text-display-xs text-ink-950">Align policy and practice.</h3>
+          <p class="mt-3 text-sm leading-7 text-ink-500">Move from exploration to clearer institutional use with practical policy language and adoption frameworks.</p>
         </div>
         <div class="editorial-panel">
           <p class="label">Step 03</p>
-          <h3 class="mt-4 font-display text-display-xs text-ink-950">Implement with confidence.</h3>
-          <p class="mt-3 text-sm leading-7 text-ink-500">Roll out AI in a way that is legible to leadership teams, staff, families, and governing boards.</p>
+          <h3 class="mt-4 font-display text-display-xs text-ink-950">Implement with less friction.</h3>
+          <p class="mt-3 text-sm leading-7 text-ink-500">Roll out AI in a way that is legible to educators, institutions, families, and academic leaders.</p>
         </div>
       </div>
     </div>
@@ -219,7 +226,7 @@ const categories = toolCategoryOrder
           <div class="mt-6 grid gap-3 sm:grid-cols-2">
             <div class="article-rail-card border border-white/10 bg-white/5">
               <p class="label text-brand-200">Included</p>
-              <p class="value text-white">Editable language for district and school adaptation.</p>
+              <p class="value text-white">Editable language for school, district, and institutional adaptation.</p>
             </div>
             <div class="article-rail-card border border-white/10 bg-white/5">
               <p class="label text-brand-200">Focus</p>
@@ -320,35 +327,19 @@ const categories = toolCategoryOrder
   <section class="section-shell border-y border-paper-300/90 bg-paper-100/50">
     <div class="container-full">
       <div class="mb-10 max-w-2xl" data-reveal>
-        <p class="section-label">Premium resources</p>
-        <h2 class="mt-3 font-display text-display-sm text-ink-950">Operational shortcuts for teams who need to move faster.</h2>
-        <p class="mt-4 text-base leading-8 text-ink-500">These toolkits package policy, implementation, and evaluation materials into ready-to-use working sets for district and school leadership teams.</p>
+        <p class="section-label">Latest from the library</p>
+        <h2 class="mt-3 font-display text-display-sm text-ink-950">Fresh content is the main engine now.</h2>
+        <p class="mt-4 text-base leading-8 text-ink-500">The library updates continuously across tool reviews, comparisons, policies, and implementation guides so returning visitors always have something new to explore.</p>
       </div>
-      <div class="grid grid-cols-1 gap-5 md:grid-cols-3" data-reveal-stagger>
-        <ProductCard
-          title="AI Policy Kit"
-          price="$29"
-          badge="Most adopted"
-          popular={true}
-          description="Complete policy bundle for district-wide AI adoption."
-          features={['5 editable policy templates', 'Board presentation deck', 'Parent communication guide', 'Staff training checklist', 'FERPA compliance matrix']}
-          href="/products/policy-kit/"
-        />
-        <ProductCard
-          title="Readiness Workbook"
-          price="$19"
-          description="Self-assessment and planning tool for AI integration."
-          features={['Infrastructure audit checklist', '90-day implementation plan', 'Budget planning worksheet', 'Stakeholder survey templates', 'Progress tracking dashboard']}
-          href="/products/readiness-workbook/"
-        />
-        <ProductCard
-          title="Tool Vetting Pack"
-          price="$39"
-          badge="Most comprehensive"
-          description="Everything you need to evaluate and approve AI tools."
-          features={['Vendor evaluation rubric', 'Security questionnaire', 'Pilot program framework', 'Tool profile tracker', 'Comparison spreadsheet']}
-          href="/products/tool-vetting-pack/"
-        />
+      <div class="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3" data-reveal-stagger>
+        {latestLibraryItems.map((item) => (
+          <a href={item.href} class="group index-card">
+            <span class="badge-blue">{item.type}</span>
+            <h3 class="mt-4 font-display text-display-xs text-ink-950 group-hover:text-brand-700">{item.title}</h3>
+            <p class="mt-3 text-sm leading-7 text-ink-500">{item.description}</p>
+            <p class="mt-5 label">{item.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
+          </a>
+        ))}
       </div>
     </div>
   </section>
@@ -356,8 +347,8 @@ const categories = toolCategoryOrder
   <section class="section-shell">
     <div class="container-narrow" data-reveal>
       <div class="article-frame text-left">
-        <p class="section-label">What leadership teams ask</p>
-        <h2 class="mt-3 font-display text-display-sm text-ink-950">The questions behind most AI decisions in schools are human, not technical.</h2>
+        <p class="section-label">What educators ask</p>
+        <h2 class="mt-3 font-display text-display-sm text-ink-950">The questions behind most AI decisions in education are human, not technical.</h2>
         <div class="mt-6 grid gap-4 md:grid-cols-2">
           {readerQuestions.map((question) => (
             <div class="info-card">
@@ -394,11 +385,11 @@ const categories = toolCategoryOrder
       <div class="cta-panel text-center">
         <p class="section-label">Field signal</p>
         <blockquote class="mt-4 font-display text-[1.9rem] leading-tight text-ink-950 md:text-display-xs">
-          The strongest version of this product is not just a content library. It is a decision-support system that helps leadership teams move from curiosity to policy, procurement, and rollout with more confidence.
+          The strongest version of this site is not just a content library. It is a decision-support system that helps educators and institutions move from curiosity to policy, practice, and rollout with more confidence.
         </blockquote>
         <div class="mt-6">
           <p class="font-semibold text-ink-900">AIForEdu editorial position</p>
-          <p class="small-note mt-1">Authority should come from clear method, transparent limits, and useful artifacts.</p>
+          <p class="small-note mt-1">Authority should come from clear method, transparent limits, and useful resources.</p>
         </div>
       </div>
     </div>
@@ -406,7 +397,7 @@ const categories = toolCategoryOrder
 
   <section class="section-shell">
     <div class="container-narrow" data-reveal>
-      <NewsletterSignup variant="hero" heading="Get a sharper read on school AI each week" subheading="One concise briefing covering a tool, a policy signal, and one practical action for leadership teams." />
+      <NewsletterSignup variant="hero" heading="Get a sharper read on AI in education each week" subheading="One concise briefing covering a tool, a policy signal, and one practical action for educators and institutions worldwide." />
     </div>
   </section>
 </BaseLayout>

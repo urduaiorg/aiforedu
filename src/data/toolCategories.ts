@@ -46,7 +46,28 @@ export const toolCategoryMeta = {
     shortLabel: 'Analytics',
     description:
       'Tools that surface patterns, dashboards, or implementation signals for leadership and program evaluation.',
-    audienceQuestion: 'Which tools give leadership teams meaningful AI-related insight instead of vanity dashboards?',
+    audienceQuestion: 'Which tools give educators and institutions meaningful AI-related insight instead of vanity dashboards?',
+  },
+  'higher-ed': {
+    label: 'Higher Education',
+    shortLabel: 'Higher ed',
+    description:
+      'AI tools, policies, and workflows relevant to universities, colleges, faculty, and academic support teams.',
+    audienceQuestion: 'Which AI tools are actually useful for higher education without undermining academic standards or governance?',
+  },
+  global: {
+    label: 'Global and developing markets',
+    shortLabel: 'Global',
+    description:
+      'Low-cost, multilingual, and infrastructure-aware AI tools for schools, NGOs, and education systems worldwide.',
+    audienceQuestion: 'Which AI tools remain useful when cost, connectivity, and device access are real constraints?',
+  },
+  research: {
+    label: 'Research and academic work',
+    shortLabel: 'Research',
+    description:
+      'Tools that support academic research, source analysis, literature workflows, and scholarly productivity.',
+    audienceQuestion: 'Which AI tools are most useful for academic research while preserving rigor and citation discipline?',
   },
 } as const;
 

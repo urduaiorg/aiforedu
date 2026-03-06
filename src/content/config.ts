@@ -5,7 +5,7 @@ const tools = defineCollection({
   schema: z.object({
     title: z.string(),
     description: z.string(),
-    category: z.enum(['writing', 'grading', 'lesson-planning', 'admin', 'student-facing', 'special-ed', 'analytics']),
+    category: z.enum(['writing', 'grading', 'lesson-planning', 'admin', 'student-facing', 'special-ed', 'analytics', 'higher-ed', 'global', 'research']),
     pricing: z.enum(['free', 'freemium', 'paid']),
     priceRange: z.string().optional(),
     rating: z.number().min(1).max(5),
@@ -19,6 +19,9 @@ const tools = defineCollection({
     publishDate: z.date(),
     featured: z.boolean().default(false),
     image: z.string().optional(),
+    audienceType: z.array(z.enum(['k12', 'higher-ed', 'global', 'all'])).optional(),
+    worksOffline: z.boolean().optional(),
+    languages: z.array(z.string()).optional(),
     reviewedBy: z.string(),
     reviewFrameworkVersion: z.string().default('v1'),
     evidenceLevel: z.enum(['vendor-stated', 'document-reviewed', 'operationally-observed']),

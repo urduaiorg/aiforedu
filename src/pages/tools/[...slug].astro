@@ -19,8 +19,8 @@ const { title, description, category, pricing, priceRange, rating, ferpaComplian
 
 const stars = '★'.repeat(Math.round(rating)) + '☆'.repeat(5 - Math.round(rating));
 const trackingUrl = affiliate ? `/api/affiliate/${affiliate.slug}` : website;
-const suggestedProductHref = '/products/tool-vetting-pack/';
-const suggestedProductLabel = 'See the vetting pack';
+const suggestedResourceHref = '/resources/';
+const suggestedResourceLabel = 'Browse free resources';
 const categoryMeta = toolCategoryMeta[category];
 const allComparisons = await getCollection('comparisons');
 const allGuides = await getCollection('guides');
@@ -45,7 +45,7 @@ const reviewQuestions = [
     answer: `This page is currently marked ${evidenceLevel.replace('-', ' ')} and was last reviewed in ${lastReviewed.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}. The verification notes show what was checked and what a school team should still verify directly.`,
   },
   {
-    question: 'What should leadership teams confirm before rollout?',
+    question: 'What should educators or institutions confirm before rollout?',
     answer:
       'Confirm current privacy documentation, contract language, implementation terms, and whether the tool fits your governance, pilot, and family communication process.',
   },
@@ -150,7 +150,7 @@ const vendorRel = affiliate ? 'sponsored nofollow noopener' : 'noopener external
 
             <div class="article-frame mt-8">
               <p class="section-label">Quick answer</p>
-              <h2 class="mt-3 font-display text-display-xs text-ink-950">Should leadership teams shortlist {title}?</h2>
+              <h2 class="mt-3 font-display text-display-xs text-ink-950">Should educators or institutions shortlist {title}?</h2>
               <p class="mt-3 text-base leading-8 text-ink-500">
                 {title} is strongest for {bestFor.toLowerCase()}. On the current AIForEdu framework it scores {rating}/5, with the best fit usually coming when school teams need {categoryMeta.shortLabel.toLowerCase()} support without sacrificing governance clarity.
               </p>
@@ -193,7 +193,7 @@ const vendorRel = affiliate ? 'sponsored nofollow noopener' : 'noopener external
 
             <div class="article-frame mt-8">
               <p class="section-label">Decision guidance</p>
-              <h2 class="mt-3 font-display text-display-xs text-ink-950">Questions leadership teams usually ask.</h2>
+              <h2 class="mt-3 font-display text-display-xs text-ink-950">Questions educators and institutions usually ask.</h2>
               <div class="mt-5 space-y-4">
                 {reviewQuestions.map((entry) => (
                   <div class="info-card">
@@ -250,9 +250,9 @@ const vendorRel = affiliate ? 'sponsored nofollow noopener' : 'noopener external
               <p class="small-note mt-3">Outbound vendor links may be monetized. Editorial scoring is independent of affiliate status.</p>
             </div>
             <div class="article-rail-card">
-              <p class="label">Leadership note</p>
-              <p class="mt-3 text-sm leading-7 text-ink-500">Need a stronger procurement process? Use the premium vetting materials to evaluate risk, readiness, and board communication.</p>
-              <a href={suggestedProductHref} class="btn-secondary mt-5 w-full justify-center">{suggestedProductLabel}</a>
+              <p class="label">Next step</p>
+              <p class="mt-3 text-sm leading-7 text-ink-500">If this review raises policy or implementation questions, continue with the free resources, frameworks, and newsletter guidance.</p>
+              <a href={suggestedResourceHref} class="btn-secondary mt-5 w-full justify-center">{suggestedResourceLabel}</a>
             </div>
             <div class="article-rail-card">
               <p class="label">Methodology</p>
@@ -269,7 +269,7 @@ const vendorRel = affiliate ? 'sponsored nofollow noopener' : 'noopener external
       </div>
 
       <div class="mt-10">
-        <NewsletterSignup variant="banner" heading="Get tool reviews like this every week" subheading="Join school leaders who stay ahead with one concise Tuesday briefing." />
+        <NewsletterSignup variant="banner" heading="Get tool reviews like this every week" subheading="Join educators and institutions who stay ahead with one concise Tuesday briefing." />
       </div>
     </div>
   </article>

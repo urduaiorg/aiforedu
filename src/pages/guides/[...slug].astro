@@ -13,12 +13,12 @@ export async function getStaticPaths() {
 
 const { guide } = Astro.props;
 const { Content } = await guide.render();
-const suggestedProductHref = guide.slug === 'how-to-evaluate-ai-tools-for-your-district'
-  ? '/products/tool-vetting-pack/'
-  : '/products/readiness-workbook/';
-const suggestedProductLabel = guide.slug === 'how-to-evaluate-ai-tools-for-your-district'
-  ? 'See the vetting pack'
-  : 'See the readiness workbook';
+const suggestedResourceHref = guide.slug === 'how-to-evaluate-ai-tools-for-your-district'
+  ? '/policy/ferpa-ai-compliance-checklist/'
+  : '/downloads/ai-policy-template/';
+const suggestedResourceLabel = guide.slug === 'how-to-evaluate-ai-tools-for-your-district'
+  ? 'Open the FERPA checklist'
+  : 'Open the free policy starter';
 const structuredData = [
   breadcrumbSchema([
     { name: 'Home', url: 'https://aiforedu.ai/' },
@@ -69,8 +69,8 @@ const structuredData = [
             </div>
             <div class="article-rail-card">
               <p class="label">Next step</p>
-              <p class="mt-3 text-sm leading-7 text-ink-500">Pair this implementation guidance with a premium working set if your team needs templates, scorecards, or a rollout worksheet.</p>
-              <a href={suggestedProductHref} class="btn-secondary mt-5 w-full justify-center">{suggestedProductLabel}</a>
+              <p class="mt-3 text-sm leading-7 text-ink-500">Pair this guidance with a free resource or framework if your team needs a concrete next step.</p>
+              <a href={suggestedResourceHref} class="btn-secondary mt-5 w-full justify-center">{suggestedResourceLabel}</a>
             </div>
           </aside>
         </div>
