@@ -1,0 +1,28 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export const prerender = true;
+---
+
+<BaseLayout
+  title="Products Moved"
+  description="AIForEdu is currently focused on free resources and newsletter growth."
+  canonical="https://aiforedu.ai/resources/"
+  noindex={true}
+>
+  <section class="page-hero section-shell-tight">
+    <div class="container-narrow">
+      <div class="cta-panel text-center">
+        <p class="section-label">Content-first update</p>
+        <h1 class="mt-3 font-display text-display-sm text-ink-950">This section has moved.</h1>
+        <p class="mt-3 text-base leading-8 text-ink-500">
+          AIForEdu is currently focused on free resources, newsletter growth, and search-first publishing. Browse the resources hub instead.
+        </p>
+        <div class="mt-6 flex flex-wrap justify-center gap-3">
+          <a href="/resources/" class="btn-primary">Open resources</a>
+          <a href="/newsletter/" class="btn-secondary">Subscribe free</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
