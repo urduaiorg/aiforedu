@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import NewsletterSignup from '../../components/NewsletterSignup.astro';
 import { getCollection } from 'astro:content';
+import { breadcrumbSchema } from '../../lib/schema';
 
 export const prerender = true;
 
@@ -12,9 +13,26 @@ export async function getStaticPaths() {
 
 const { policy } = Astro.props;
 const { Content } = await policy.render();
+const structuredData = [
+  breadcrumbSchema([
+    { name: 'Home', url: 'https://aiforedu.ai/' },
+    { name: 'Policies', url: 'https://aiforedu.ai/policy/' },
+    { name: policy.data.title, url: `https://aiforedu.ai/policy/${policy.slug}/` },
+  ]),
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: policy.data.title,
+    description: policy.data.description,
+    datePublished: policy.data.publishDate.toISOString(),
+    dateModified: policy.data.lastUpdated.toISOString(),
+    author: { '@type': 'Organization', name: 'AIForEdu' },
+    publisher: { '@type': 'Organization', name: 'AIForEdu', url: 'https://aiforedu.ai' },
+  },
+];
 ---
 
-<BaseLayout title={policy.data.title} description={policy.data.description}>
+<BaseLayout title={policy.data.title} description={policy.data.description} ogType="article" structuredData={structuredData}>
   <article class="section-shell-tight">
     <div class="container-full">
       <nav class="breadcrumbs">
@@ -42,7 +60,7 @@ const { Content } = await policy.render();
         <div class="cta-panel mt-8 text-center" x-data="{ email: '', role: '', downloadUrl: '', done: false, error: '', successTitle: 'Resource ready', successMessage: 'Open the resource now.' }">
           <p class="section-label">Editable download</p>
           <h3 class="mt-3 font-display text-display-xs text-ink-950">Request the starter access page.</h3>
-          <p class="mt-3 text-sm leading-7 text-ink-500">Enter your email and role to unlock the resource immediately. If email automation is configured, you will also receive follow-up guidance.</p>
+          <p class="mt-3 text-sm leading-7 text-ink-500">Enter your email and role to unlock the resource immediately. If email automation is configured, you will also receive follow-up guidance there.</p>
           <form class="mx-auto mt-5 max-w-xl space-y-4" @submit.prevent="error = ''; const r = await fetch('/api/free-download', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({email, role, resource: 'policy-template', useCase: 'policy-page-gated'}) }); if(r.ok){ const d = await r.json(); downloadUrl = d.downloadUrl || ''; successTitle = d.successTitle || successTitle; successMessage = d.successMessage || successMessage; done=true; } else { const d = await r.json(); error = d.error || 'Something went wrong'; }">
             <template x-if="!done">
               <div class="space-y-4">
@@ -59,6 +77,7 @@ const { Content } = await policy.render();
                 </div>
                 <button type="submit" class="btn-primary justify-center">Unlock resource</button>
                 <p x-show="error" x-text="error" class="text-sm text-red-600"></p>
+                <p class="small-note">Intended for school and district professionals. We only ask for enough context to route the right follow-up. See <a href="/privacy/" class="underline underline-offset-4">privacy</a>.</p>
               </div>
             </template>
             <template x-if="done">

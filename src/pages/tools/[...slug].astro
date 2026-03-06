@@ -3,6 +3,8 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import ComplianceBadge from '../../components/ComplianceBadge.astro';
 import NewsletterSignup from '../../components/NewsletterSignup.astro';
 import { getCollection } from 'astro:content';
+import { breadcrumbSchema, faqSchema } from '../../lib/schema';
+import { toolCategoryMeta } from '../../data/toolCategories';
 
 export const prerender = true;
 
@@ -19,9 +21,79 @@ const stars = '★'.repeat(Math.round(rating)) + '☆'.repeat(5 - Math.round(rat
 const trackingUrl = affiliate ? `/api/affiliate/${affiliate.slug}` : website;
 const suggestedProductHref = '/products/tool-vetting-pack/';
 const suggestedProductLabel = 'See the vetting pack';
+const categoryMeta = toolCategoryMeta[category];
+const allComparisons = await getCollection('comparisons');
+const allGuides = await getCollection('guides');
+const allPolicies = await getCollection('policies');
+const allTools = await getCollection('tools');
+const relatedComparisons = allComparisons.filter((entry) => entry.data.tools.includes(title)).slice(0, 2);
+const relatedGuides = allGuides
+  .filter((entry) => entry.slug.includes('evaluate') || entry.slug.includes('procurement') || entry.data.category.toLowerCase().includes('vendor'))
+  .slice(0, 2);
+const relatedPolicies = allPolicies.slice(0, 2);
+const relatedTools = allTools
+  .filter((entry) => entry.slug !== tool.slug && entry.data.category === category)
+  .sort((a, b) => b.data.rating - a.data.rating)
+  .slice(0, 2);
+const reviewQuestions = [
+  {
+    question: `Is ${title} worth shortlisting for a school or district?`,
+    answer: `${title} is best suited to ${bestFor.toLowerCase()}. The current AIForEdu score is ${rating}/5 across privacy, instructional value, implementation readiness, and transparency.`,
+  },
+  {
+    question: `What evidence supports this ${title} review?`,
+    answer: `This page is currently marked ${evidenceLevel.replace('-', ' ')} and was last reviewed in ${lastReviewed.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}. The verification notes show what was checked and what a school team should still verify directly.`,
+  },
+  {
+    question: 'What should leadership teams confirm before rollout?',
+    answer:
+      'Confirm current privacy documentation, contract language, implementation terms, and whether the tool fits your governance, pilot, and family communication process.',
+  },
+];
+const structuredData = [
+  breadcrumbSchema([
+    { name: 'Home', url: 'https://aiforedu.ai/' },
+    { name: 'Tool reviews', url: 'https://aiforedu.ai/tools/' },
+    { name: title, url: `https://aiforedu.ai/tools/${tool.slug}/` },
+  ]),
+  faqSchema(reviewQuestions),
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Review',
+    itemReviewed: {
+      '@type': 'SoftwareApplication',
+      name: title,
+      applicationCategory: categoryMeta.label,
+      operatingSystem: 'Web',
+      offers: {
+        '@type': 'Offer',
+        price: priceRange || pricing,
+        priceCurrency: 'USD',
+      },
+    },
+    reviewRating: {
+      '@type': 'Rating',
+      ratingValue: rating,
+      bestRating: 5,
+    },
+    author: {
+      '@type': 'Organization',
+      name: reviewedBy,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'AIForEdu',
+      url: 'https://aiforedu.ai',
+    },
+    datePublished: tool.data.publishDate.toISOString(),
+    dateModified: lastReviewed.toISOString(),
+    reviewBody: description,
+  },
+];
+const vendorRel = affiliate ? 'sponsored nofollow noopener' : 'noopener external';
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout title={title} description={description} ogType="article" structuredData={structuredData}>
   <article class="section-shell-tight">
     <div class="container-full">
       <nav class="breadcrumbs">
@@ -48,7 +120,7 @@ const suggestedProductLabel = 'See the vetting pack';
             <div class="mt-8 info-grid">
               <div class="info-card">
                 <p class="label">Category</p>
-                <p class="value capitalize">{category.replace('-', ' ')}</p>
+                <p class="value"><a href={`/tools/category/${category}/`} class="hover:text-brand-700">{categoryMeta.label}</a></p>
               </div>
               <div class="info-card">
                 <p class="label">Best fit</p>
@@ -77,7 +149,16 @@ const suggestedProductLabel = 'See the vetting pack';
             </div>
 
             <div class="article-frame mt-8">
+              <p class="section-label">Quick answer</p>
+              <h2 class="mt-3 font-display text-display-xs text-ink-950">Should leadership teams shortlist {title}?</h2>
+              <p class="mt-3 text-base leading-8 text-ink-500">
+                {title} is strongest for {bestFor.toLowerCase()}. On the current AIForEdu framework it scores {rating}/5, with the best fit usually coming when school teams need {categoryMeta.shortLabel.toLowerCase()} support without sacrificing governance clarity.
+              </p>
+            </div>
+
+            <div class="article-frame mt-8">
               <p class="section-label">Score breakdown</p>
+              <h2 class="mt-3 font-display text-display-xs text-ink-950">How this review scored the tool.</h2>
               <div class="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                 <div class="info-card">
                   <p class="label">Privacy</p>
@@ -100,6 +181,7 @@ const suggestedProductLabel = 'See the vetting pack';
 
             <div class="article-frame mt-8">
               <p class="section-label">Verification notes</p>
+              <h2 class="mt-3 font-display text-display-xs text-ink-950">What AIForEdu checked before publishing.</h2>
               <div class="mt-5 space-y-4">
                 {verificationNotes.map((note) => (
                   <div class="info-card">
@@ -109,16 +191,63 @@ const suggestedProductLabel = 'See the vetting pack';
               </div>
             </div>
 
+            <div class="article-frame mt-8">
+              <p class="section-label">Decision guidance</p>
+              <h2 class="mt-3 font-display text-display-xs text-ink-950">Questions leadership teams usually ask.</h2>
+              <div class="mt-5 space-y-4">
+                {reviewQuestions.map((entry) => (
+                  <div class="info-card">
+                    <h3 class="value">{entry.question}</h3>
+                    <p class="mt-3 text-sm leading-7 text-ink-500">{entry.answer}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             <div class="prose-content mt-12">
               <Content />
             </div>
+
+            {(relatedComparisons.length > 0 || relatedGuides.length > 0 || relatedPolicies.length > 0 || relatedTools.length > 0) && (
+              <div class="article-frame mt-10">
+                <p class="section-label">Related reading</p>
+                <h2 class="mt-3 font-display text-display-xs text-ink-950">Keep evaluating from multiple angles.</h2>
+                <div class="mt-5 grid gap-4 md:grid-cols-2">
+                  {relatedComparisons.map((entry) => (
+                    <a href={`/compare/${entry.slug}/`} class="info-card">
+                      <p class="label">Comparison</p>
+                      <p class="value">{entry.data.title}</p>
+                    </a>
+                  ))}
+                  {relatedGuides.map((entry) => (
+                    <a href={`/guides/${entry.slug}/`} class="info-card">
+                      <p class="label">Guide</p>
+                      <p class="value">{entry.data.title}</p>
+                    </a>
+                  ))}
+                  {relatedPolicies.map((entry) => (
+                    <a href={`/policy/${entry.slug}/`} class="info-card">
+                      <p class="label">Policy resource</p>
+                      <p class="value">{entry.data.title}</p>
+                    </a>
+                  ))}
+                  {relatedTools.map((entry) => (
+                    <a href={`/tools/${entry.slug}/`} class="info-card">
+                      <p class="label">Alternative tool</p>
+                      <p class="value">{entry.data.title}</p>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           <aside class="article-rail">
             <div class="article-rail-card">
               <p class="label">Vendor access</p>
               <p class="mt-3 text-sm leading-7 text-ink-500">Visit the vendor site when you are ready to evaluate the product in detail.</p>
-              <a href={trackingUrl} target="_blank" rel="noopener" class="btn-primary mt-5 w-full justify-center">Visit {title}</a>
+              <a href={trackingUrl} target="_blank" rel={vendorRel} class="btn-primary mt-5 w-full justify-center">Visit {title}</a>
+              <p class="small-note mt-3">Outbound vendor links may be monetized. Editorial scoring is independent of affiliate status.</p>
             </div>
             <div class="article-rail-card">
               <p class="label">Leadership note</p>
@@ -129,6 +258,11 @@ const suggestedProductLabel = 'See the vetting pack';
               <p class="label">Methodology</p>
               <p class="mt-3 text-sm leading-7 text-ink-500">Read how AIForEdu distinguishes vendor claims, document review, and operational observation.</p>
               <a href="/methodology/" class="btn-secondary mt-5 w-full justify-center">Review the method</a>
+            </div>
+            <div class="article-rail-card">
+              <p class="label">Category view</p>
+              <p class="mt-3 text-sm leading-7 text-ink-500">See how this tool compares inside the broader {categoryMeta.label.toLowerCase()} cluster.</p>
+              <a href={`/tools/category/${category}/`} class="btn-secondary mt-5 w-full justify-center">Open category page</a>
             </div>
           </aside>
         </div>

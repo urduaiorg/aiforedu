@@ -9,6 +9,11 @@ interface Env {
   TURNSTILE_SECRET_KEY?: string;
 }
 
+const JSON_HEADERS = {
+  'Content-Type': 'application/json',
+  'X-Robots-Tag': 'noindex, nofollow',
+};
+
 export const POST: APIRoute = async ({ request }) => {
   const env = (request as any).cf?.env as Env | undefined;
 
@@ -24,7 +29,7 @@ export const POST: APIRoute = async ({ request }) => {
     };
 
     if (!email || !email.includes('@')) {
-      return new Response(JSON.stringify({ error: 'Valid email required' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+      return new Response(JSON.stringify({ error: 'Valid email required' }), { status: 400, headers: JSON_HEADERS });
     }
 
     const hasDatabase = Boolean(env?.DB);
@@ -35,7 +40,7 @@ export const POST: APIRoute = async ({ request }) => {
         JSON.stringify({
           error: 'The newsletter workflow is not configured yet. Please check back after launch.',
         }),
-        { status: 503, headers: { 'Content-Type': 'application/json' } }
+        { status: 503, headers: JSON_HEADERS }
       );
     }
 
@@ -48,7 +53,7 @@ export const POST: APIRoute = async ({ request }) => {
       });
       const verify = await verifyRes.json() as { success: boolean };
       if (!verify.success) {
-        return new Response(JSON.stringify({ error: 'Bot verification failed' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
+        return new Response(JSON.stringify({ error: 'Bot verification failed' }), { status: 403, headers: JSON_HEADERS });
       }
     }
 
@@ -103,9 +108,9 @@ export const POST: APIRoute = async ({ request }) => {
           ? 'Check your inbox for the first briefing and welcome resources.'
           : 'Your interest has been recorded. Automated newsletter delivery is not configured in this environment yet.',
       }),
-      { status: 200, headers: { 'Content-Type': 'application/json' } }
+      { status: 200, headers: JSON_HEADERS }
     );
   } catch (e) {
-    return new Response(JSON.stringify({ error: 'Server error' }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+    return new Response(JSON.stringify({ error: 'Server error' }), { status: 500, headers: JSON_HEADERS });
   }
 };

@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import NewsletterSignup from '../../components/NewsletterSignup.astro';
 import { getCollection } from 'astro:content';
+import { breadcrumbSchema } from '../../lib/schema';
 
 export const prerender = true;
 
@@ -12,9 +13,26 @@ export async function getStaticPaths() {
 
 const { comparison } = Astro.props;
 const { Content } = await comparison.render();
+const structuredData = [
+  breadcrumbSchema([
+    { name: 'Home', url: 'https://aiforedu.ai/' },
+    { name: 'Comparisons', url: 'https://aiforedu.ai/compare/' },
+    { name: comparison.data.title, url: `https://aiforedu.ai/compare/${comparison.slug}/` },
+  ]),
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: comparison.data.title,
+    description: comparison.data.description,
+    datePublished: comparison.data.publishDate.toISOString(),
+    dateModified: comparison.data.lastUpdated.toISOString(),
+    author: { '@type': 'Organization', name: 'AIForEdu' },
+    publisher: { '@type': 'Organization', name: 'AIForEdu', url: 'https://aiforedu.ai' },
+  },
+];
 ---
 
-<BaseLayout title={comparison.data.title} description={comparison.data.description}>
+<BaseLayout title={comparison.data.title} description={comparison.data.description} ogType="article" structuredData={structuredData}>
   <article class="section-shell-tight">
     <div class="container-full">
       <nav class="breadcrumbs">

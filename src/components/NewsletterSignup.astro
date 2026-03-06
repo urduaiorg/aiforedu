@@ -75,10 +75,15 @@ const { variant = 'inline', heading = 'Get the Weekly AI-in-Ed Briefing', subhea
       </div>
 
       <p x-show="error" x-text="error" x-transition class:list={['text-xs', variant === 'hero' ? 'text-red-200' : 'text-red-600']}></p>
+      <p class:list={['text-xs leading-6', variant === 'hero' ? 'text-ink-300' : 'text-ink-500']}>
+        Intended for school and district professionals. We only ask for your email and use it for briefing delivery or reply-path follow-up.
+      </p>
       <div class="flex flex-wrap gap-3 text-[11px] uppercase tracking-[0.16em]">
         <span class:list={[variant === 'hero' ? 'text-ink-300' : 'text-ink-400']}>No spam</span>
         <span class:list={[variant === 'hero' ? 'text-ink-500' : 'text-paper-300']}>•</span>
         <span class:list={[variant === 'hero' ? 'text-ink-300' : 'text-ink-400']}>Unsubscribe anytime</span>
+        <span class:list={[variant === 'hero' ? 'text-ink-500' : 'text-paper-300']}>•</span>
+        <a href="/privacy/" class:list={['underline underline-offset-4', variant === 'hero' ? 'text-ink-300' : 'text-ink-400']}>Privacy</a>
       </div>
     </form>
   </div>

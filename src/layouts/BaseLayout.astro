@@ -1,16 +1,31 @@
 ---
 import '@/styles/global.css';
+import { organizationSchema, toJsonLd, websiteSchema, type JsonLdValue } from '../lib/schema';
 
 interface Props {
   title: string;
   description?: string;
   ogImage?: string;
   canonical?: string;
+  ogType?: 'website' | 'article' | 'product';
+  structuredData?: JsonLdValue | JsonLdValue[];
+  noindex?: boolean;
 }
 
-const { title, description = 'AI intelligence for school leadership: independent tool reviews, policy resources, and implementation guidance for K-12 teams.', ogImage = '/og-default.svg', canonical } = Astro.props;
+const {
+  title,
+  description = 'AI intelligence for school leadership: independent tool reviews, policy resources, and implementation guidance for K-12 teams.',
+  ogImage = '/og-default.svg',
+  canonical,
+  ogType = 'website',
+  structuredData,
+  noindex = false,
+} = Astro.props;
 const fullTitle = title === 'Home' ? 'AIForEdu — AI Tools, Policies & Guides for School Leaders' : `${title} | AIForEdu`;
 const canonicalURL = canonical || new URL(Astro.url.pathname, Astro.site).href;
+const siteSchemas = [organizationSchema(), websiteSchema()];
+const pageSchemas = structuredData ? (Array.isArray(structuredData) ? structuredData : [structuredData]) : [];
+const jsonLd = toJsonLd([...siteSchemas, ...pageSchemas]);
 const navItems = [
   { href: '/tools/', label: 'Tools' },
   { href: '/compare/', label: 'Compare' },
@@ -29,7 +44,8 @@ const navItems = [
   <title>{fullTitle}</title>
   <meta name="description" content={description} />
   <link rel="canonical" href={canonicalURL} />
-  <meta property="og:type" content="website" />
+  {noindex && <meta name="robots" content="noindex, nofollow" />}
+  <meta property="og:type" content={ogType} />
   <meta property="og:url" content={canonicalURL} />
   <meta property="og:title" content={fullTitle} />
   <meta property="og:description" content={description} />
@@ -47,6 +63,7 @@ const navItems = [
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,500..700,50&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link href="/pagefind/pagefind-ui.css" rel="stylesheet" />
+  {jsonLd && <script type="application/ld+json" set:html={jsonLd} />}
   <slot name="head" />
 </head>
 <body class="min-h-full">

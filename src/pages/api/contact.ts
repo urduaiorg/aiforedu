@@ -8,6 +8,11 @@ interface Env {
   CONTACT_WEBHOOK_URL?: string;
 }
 
+const JSON_HEADERS = {
+  'Content-Type': 'application/json',
+  'X-Robots-Tag': 'noindex, nofollow',
+};
+
 export const POST: APIRoute = async ({ request }) => {
   const env = (request as any).cf?.env as Env | undefined;
 
@@ -27,7 +32,7 @@ export const POST: APIRoute = async ({ request }) => {
     };
 
     if (!email || !name || !message) {
-      return new Response(JSON.stringify({ error: 'Name, email, and message are required' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+      return new Response(JSON.stringify({ error: 'Name, email, and message are required' }), { status: 400, headers: JSON_HEADERS });
     }
 
     const hasDatabase = Boolean(env?.DB);
@@ -38,7 +43,7 @@ export const POST: APIRoute = async ({ request }) => {
         JSON.stringify({
           error: 'The contact workflow is not configured yet. Please email hello@aiforedu.ai directly.',
         }),
-        { status: 503, headers: { 'Content-Type': 'application/json' } }
+        { status: 503, headers: JSON_HEADERS }
       );
     }
 
@@ -51,7 +56,7 @@ export const POST: APIRoute = async ({ request }) => {
       });
       const verify = await verifyRes.json() as { success: boolean };
       if (!verify.success) {
-        return new Response(JSON.stringify({ error: 'Bot verification failed' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
+        return new Response(JSON.stringify({ error: 'Bot verification failed' }), { status: 403, headers: JSON_HEADERS });
       }
     }
 
@@ -79,7 +84,7 @@ export const POST: APIRoute = async ({ request }) => {
       if (!webhookRes.ok) {
         return new Response(
           JSON.stringify({ error: 'The contact destination is currently unavailable. Please email hello@aiforedu.ai directly.' }),
-          { status: 502, headers: { 'Content-Type': 'application/json' } }
+          { status: 502, headers: JSON_HEADERS }
         );
       }
     }
@@ -117,9 +122,9 @@ export const POST: APIRoute = async ({ request }) => {
         successTitle: 'Message received',
         successMessage,
       }),
-      { status: 200, headers: { 'Content-Type': 'application/json' } }
+      { status: 200, headers: JSON_HEADERS }
     );
   } catch (e) {
-    return new Response(JSON.stringify({ error: 'Server error' }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+    return new Response(JSON.stringify({ error: 'Server error' }), { status: 500, headers: JSON_HEADERS });
   }
 };

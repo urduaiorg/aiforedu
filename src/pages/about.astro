@@ -1,11 +1,24 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import NewsletterSignup from '../components/NewsletterSignup.astro';
+import { editorialDesks, editorialSignals, readerQuestions } from '../data/editorial';
+import { breadcrumbSchema } from '../lib/schema';
 
 export const prerender = true;
+const structuredData = [
+  breadcrumbSchema([
+    { name: 'Home', url: 'https://aiforedu.ai/' },
+    { name: 'About', url: 'https://aiforedu.ai/about/' },
+  ]),
+];
 ---
 
-<BaseLayout title="About AIForEdu" description="Why AIForEdu exists, how it is published, and how its review process is intended to support school leadership decisions.">
+<BaseLayout
+  title="About AIForEdu"
+  description="Why AIForEdu exists, how it is published, and how its review process is intended to support school leadership decisions."
+  ogType="article"
+  structuredData={structuredData}
+>
   <section class="page-hero section-shell-tight">
     <div class="container-full">
       <div class="max-w-3xl">
@@ -28,9 +41,39 @@ export const prerender = true;
         <p>Every tool on AIForEdu.ai is reviewed against the same broad framework: privacy posture, instructional value, implementation readiness, and transparency. The methodology page explains how we distinguish vendor claims, reviewed documentation, and operational observations.</p>
         <p>We accept affiliate relationships with some tools we review, but editorial independence remains the rule. Affiliate links, if present, should never be the only reason a product appears on the site.</p>
         <h2>Who We Are</h2>
-        <p>AIForEdu.ai is a product of <a href="https://imglocal.com">Impact Glocal Inc.</a>. At the moment, the site is published by the Impact Glocal editorial and research team rather than by a fully bylined contributor roster. Public contributor and advisor profiles should be added as the library expands.</p>
+        <p>AIForEdu.ai is a product of <a href="https://imglocal.com">Impact Glocal Inc.</a>. It is currently operated by a small editorial and research workflow rather than a large newsroom. The goal is to be transparent about scope: what we know, what we checked, and what school teams still need to validate for themselves.</p>
         <h2>What We Will Not Claim</h2>
         <p>AIForEdu should not imply district approval, legal validation, field testing, or market leadership unless those statements can be supported. Where a detail comes from vendor materials and has not been independently corroborated, the site should say so.</p>
+      </div>
+      <div class="mt-10 grid gap-4 md:grid-cols-3">
+        {editorialDesks.map((desk) => (
+          <div class="info-card">
+            <p class="label">{desk.title}</p>
+            <p class="mt-3 text-sm leading-7 text-ink-500">{desk.summary}</p>
+          </div>
+        ))}
+      </div>
+      <div class="mt-8 article-frame">
+        <p class="section-label">Trust signals</p>
+        <h2 class="mt-3 font-display text-display-xs text-ink-950">How the site tries to earn trust in practice.</h2>
+        <div class="mt-5 grid gap-4 md:grid-cols-2">
+          {editorialSignals.map((signal) => (
+            <div class="info-card">
+              <p class="value">{signal}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div class="mt-8 article-frame">
+        <p class="section-label">Reader reality</p>
+        <h2 class="mt-3 font-display text-display-xs text-ink-950">The work is shaped around the questions leadership teams actually bring.</h2>
+        <div class="mt-5 grid gap-4 md:grid-cols-2">
+          {readerQuestions.map((question) => (
+            <div class="info-card">
+              <p class="value">{question}</p>
+            </div>
+          ))}
+        </div>
       </div>
       <div class="mt-10">
         <div class="cta-panel">

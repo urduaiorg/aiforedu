@@ -2,16 +2,43 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ToolCard from '../../components/ToolCard.astro';
 import { getCollection } from 'astro:content';
+import { toolCategoryMeta, toolCategoryOrder } from '../../data/toolCategories';
+import { breadcrumbSchema } from '../../lib/schema';
 
 export const prerender = true;
 
 const allTools = await getCollection('tools');
 const tools = allTools.sort((a, b) => b.data.rating - a.data.rating);
-
-const categories = [...new Set(allTools.map(t => t.data.category))].sort();
+const categoryCounts = allTools.reduce((acc, tool) => {
+  acc[tool.data.category] = (acc[tool.data.category] || 0) + 1;
+  return acc;
+}, {} as Record<string, number>);
+const categories = toolCategoryOrder.filter((slug) => categoryCounts[slug]).map((slug) => ({
+  slug,
+  label: toolCategoryMeta[slug].label,
+  count: categoryCounts[slug],
+}));
+const structuredData = [
+  breadcrumbSchema([
+    { name: 'Home', url: 'https://aiforedu.ai/' },
+    { name: 'Tool reviews', url: 'https://aiforedu.ai/tools/' },
+  ]),
+  {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: 'AI tool reviews for school systems',
+    url: 'https://aiforedu.ai/tools/',
+    description:
+      'Independent reviews of AI tools for K-12 education with emphasis on privacy posture, implementation readiness, and classroom fit.',
+  },
+];
 ---
 
-<BaseLayout title="AI Tool Reviews" description="Independent reviews of AI tools for K-12 education, with emphasis on privacy posture, implementation readiness, and classroom fit.">
+<BaseLayout
+  title="AI Tool Reviews"
+  description="Independent reviews of AI tools for K-12 education, with emphasis on privacy posture, implementation readiness, and classroom fit."
+  structuredData={structuredData}
+>
   <section class="page-hero section-shell-tight">
     <div class="container-full">
       <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-end">
@@ -33,8 +60,20 @@ const categories = [...new Set(allTools.map(t => t.data.category))].sort();
     <div class="container-full">
       <div class="flex flex-wrap gap-3">
         <button @click="active = 'all'" :class="active === 'all' ? 'filter-chip-active' : ''" class="filter-chip">All tools</button>
-        {categories.map(cat => (
-          <button @click={`active = '${cat}'`} x-bind:class={`active === '${cat}' ? 'filter-chip-active' : ''`} class="filter-chip">{cat.replace('-', ' ')}</button>
+        {categories.map((cat) => (
+          <button @click={`active = '${cat.slug}'`} x-bind:class={`active === '${cat.slug}' ? 'filter-chip-active' : ''`} class="filter-chip">
+            {cat.label}
+          </button>
+        ))}
+      </div>
+
+      <div class="mt-5 flex flex-wrap gap-3">
+        {categories.map((cat) => (
+          <a href={`/tools/category/${cat.slug}/`} class="metric-chip">
+            {cat.label}
+            <span class="divider-dot"></span>
+            {cat.count}
+          </a>
         ))}
       </div>
 

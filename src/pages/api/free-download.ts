@@ -8,6 +8,11 @@ interface Env {
   BEEHIIV_PUBLICATION_ID?: string;
 }
 
+const JSON_HEADERS = {
+  'Content-Type': 'application/json',
+  'X-Robots-Tag': 'noindex, nofollow',
+};
+
 const resourceMap: Record<string, { downloadUrl: string; productSlug: string }> = {
   'ai-policy-template': {
     downloadUrl: '/downloads/ai-policy-template/',
@@ -34,14 +39,14 @@ export const POST: APIRoute = async ({ request }) => {
     };
 
     if (!email || !email.includes('@')) {
-      return new Response(JSON.stringify({ error: 'Valid email required' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+      return new Response(JSON.stringify({ error: 'Valid email required' }), { status: 400, headers: JSON_HEADERS });
     }
 
     const resourceKey = resource || 'ai-policy-template';
     const resourceConfig = resourceMap[resourceKey];
 
     if (!resourceConfig) {
-      return new Response(JSON.stringify({ error: 'Requested resource not found' }), { status: 404, headers: { 'Content-Type': 'application/json' } });
+      return new Response(JSON.stringify({ error: 'Requested resource not found' }), { status: 404, headers: JSON_HEADERS });
     }
 
     // Store lead capture with resource info
@@ -102,9 +107,9 @@ export const POST: APIRoute = async ({ request }) => {
           ? 'Open the resource now. We also queued the follow-up guidance in your inbox.'
           : 'Open the resource now. The resource is available immediately in your browser.',
       }),
-      { status: 200, headers: { 'Content-Type': 'application/json' } }
+      { status: 200, headers: JSON_HEADERS }
     );
   } catch (e) {
-    return new Response(JSON.stringify({ error: 'Server error' }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+    return new Response(JSON.stringify({ error: 'Server error' }), { status: 500, headers: JSON_HEADERS });
   }
 };

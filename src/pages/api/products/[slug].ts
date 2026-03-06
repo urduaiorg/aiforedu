@@ -7,13 +7,17 @@ interface Env {
   DB?: D1Database;
 }
 
+const ROBOTS_HEADERS = {
+  'X-Robots-Tag': 'noindex, nofollow',
+};
+
 export const GET: APIRoute = async ({ params, request }) => {
   const env = (request as any).cf?.env as Env | undefined;
   const slug = params.slug as keyof typeof productsBySlug | undefined;
   const product = slug ? productsBySlug[slug] : undefined;
 
   if (!product) {
-    return new Response('Not found', { status: 404 });
+    return new Response('Not found', { status: 404, headers: ROBOTS_HEADERS });
   }
 
   const source = new URL(request.url).searchParams.get('source') || 'unknown';
@@ -37,5 +41,11 @@ export const GET: APIRoute = async ({ params, request }) => {
     }
   }
 
-  return Response.redirect(product.checkoutUrl, 302);
+  return new Response(null, {
+    status: 302,
+    headers: {
+      ...ROBOTS_HEADERS,
+      Location: product.checkoutUrl,
+    },
+  });
 };

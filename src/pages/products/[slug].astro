@@ -2,6 +2,8 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import NewsletterSignup from '../../components/NewsletterSignup.astro';
 import { products } from '../../data/products';
+import { productAssurances } from '../../data/editorial';
+import { breadcrumbSchema, faqSchema } from '../../lib/schema';
 
 export const prerender = true;
 
@@ -14,9 +16,34 @@ export function getStaticPaths() {
 
 const { product } = Astro.props;
 const checkoutPath = `/api/products/${product.slug}?source=product-page-${product.slug}`;
+const structuredData = [
+  breadcrumbSchema([
+    { name: 'Home', url: 'https://aiforedu.ai/' },
+    { name: 'Premium resources', url: 'https://aiforedu.ai/products/' },
+    { name: product.title, url: `https://aiforedu.ai/products/${product.slug}/` },
+  ]),
+  faqSchema(product.faq),
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.title,
+    description: product.description,
+    brand: {
+      '@type': 'Brand',
+      name: 'AIForEdu',
+    },
+    offers: {
+      '@type': 'Offer',
+      price: product.price.replace('$', ''),
+      priceCurrency: 'USD',
+      availability: 'https://schema.org/InStock',
+      url: `https://aiforedu.ai/products/${product.slug}/`,
+    },
+  },
+];
 ---
 
-<BaseLayout title={product.title} description={product.description}>
+<BaseLayout title={product.title} description={product.description} ogType="product" structuredData={structuredData}>
   <section class="page-hero section-shell-tight">
     <div class="container-full">
       <nav class="breadcrumbs">
@@ -43,7 +70,7 @@ const checkoutPath = `/api/products/${product.slug}?source=product-page-${produc
           <p class="label">Outcome</p>
           <p class="mt-3 font-display text-display-xs text-ink-950">{product.promise}</p>
           <a href={checkoutPath} class="btn-primary mt-6 w-full justify-center">Go to checkout</a>
-          <p class="small-note mt-3">Checkout is handled via LemonSqueezy.</p>
+          <p class="small-note mt-3">Checkout is handled via LemonSqueezy. Delivery is digital and immediate after purchase.</p>
         </div>
       </div>
     </div>
@@ -61,6 +88,7 @@ const checkoutPath = `/api/products/${product.slug}?source=product-page-${produc
 
           <div class="article-frame">
             <p class="section-label">What is included</p>
+            <h2 class="mt-3 font-display text-display-xs text-ink-950">What your team gets.</h2>
             <div class="mt-5 grid gap-4 md:grid-cols-2">
               {product.features.map((feature) => (
                 <div class="info-card">
@@ -71,7 +99,20 @@ const checkoutPath = `/api/products/${product.slug}?source=product-page-${produc
           </div>
 
           <div class="article-frame">
+            <p class="section-label">See inside</p>
+            <h2 class="mt-3 font-display text-display-xs text-ink-950">What the working files actually help you do.</h2>
+            <div class="mt-5 grid gap-4 md:grid-cols-3">
+              {product.preview.map((item) => (
+                <div class="info-card">
+                  <p class="value">{item}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div class="article-frame">
             <p class="section-label">Deliverables</p>
+            <h2 class="mt-3 font-display text-display-xs text-ink-950">The files and artifacts included in the bundle.</h2>
             <div class="mt-5 grid gap-4 md:grid-cols-2">
               {product.deliverables.map((item) => (
                 <div class="info-card">
@@ -83,6 +124,7 @@ const checkoutPath = `/api/products/${product.slug}?source=product-page-${produc
 
           <div class="article-frame">
             <p class="section-label">What changes after purchase</p>
+            <h2 class="mt-3 font-display text-display-xs text-ink-950">Why teams buy this instead of building from scratch.</h2>
             <div class="mt-5 grid gap-4 md:grid-cols-3">
               {product.outcomes.map((outcome) => (
                 <div class="info-card">
@@ -94,10 +136,11 @@ const checkoutPath = `/api/products/${product.slug}?source=product-page-${produc
 
           <div class="article-frame">
             <p class="section-label">FAQ</p>
+            <h2 class="mt-3 font-display text-display-xs text-ink-950">Common purchase questions.</h2>
             <div class="mt-5 space-y-4">
               {product.faq.map((entry) => (
                 <div class="info-card">
-                  <p class="value">{entry.question}</p>
+                  <h3 class="value">{entry.question}</h3>
                   <p class="mt-3 text-sm leading-7 text-ink-500">{entry.answer}</p>
                 </div>
               ))}
@@ -110,6 +153,30 @@ const checkoutPath = `/api/products/${product.slug}?source=product-page-${produc
             <p class="label">Purchase summary</p>
             <p class="mt-3 text-sm leading-7 text-ink-500">{product.price} one-time purchase with delivery handled through LemonSqueezy checkout.</p>
             <a href={checkoutPath} class="btn-primary mt-5 w-full justify-center">Go to checkout</a>
+            <div class="mt-5 space-y-3">
+              <div class="info-card">
+                <p class="label">Delivery</p>
+                <p class="mt-2 text-sm leading-7 text-ink-500">{product.delivery}</p>
+              </div>
+              <div class="info-card">
+                <p class="label">Format</p>
+                <p class="mt-2 text-sm leading-7 text-ink-500">{product.format}</p>
+              </div>
+              <div class="info-card">
+                <p class="label">License</p>
+                <p class="mt-2 text-sm leading-7 text-ink-500">{product.license}</p>
+              </div>
+            </div>
+          </div>
+          <div class="article-rail-card">
+            <p class="label">Buyer reassurance</p>
+            <div class="mt-4 space-y-3">
+              {productAssurances.map((item) => (
+                <div class="info-card">
+                  <p class="value">{item}</p>
+                </div>
+              ))}
+            </div>
           </div>
           <div class="article-rail-card">
             <p class="label">Alternative path</p>

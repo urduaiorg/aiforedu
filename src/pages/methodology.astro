@@ -1,12 +1,22 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { editorialDesks } from '../data/editorial';
+import { breadcrumbSchema } from '../lib/schema';
 
 export const prerender = true;
+const structuredData = [
+  breadcrumbSchema([
+    { name: 'Home', url: 'https://aiforedu.ai/' },
+    { name: 'Methodology', url: 'https://aiforedu.ai/methodology/' },
+  ]),
+];
 ---
 
 <BaseLayout
   title="Review Methodology"
   description="How AIForEdu evaluates tools, updates reviews, handles affiliate links, and distinguishes verified findings from vendor claims."
+  ogType="article"
+  structuredData={structuredData}
 >
   <section class="page-hero section-shell-tight">
     <div class="container-full">
@@ -74,8 +84,20 @@ export const prerender = true;
         <div class="article-frame">
           <p class="section-label">Editorial ownership</p>
           <div class="prose-content mt-5">
-            <p>AIForEdu is published by the Impact Glocal editorial and research team. Public contributor profiles, advisor bios, and reviewer bylines should be added as the library expands. Until then, pages should avoid implying more individual attribution than the site can currently support.</p>
+            <p>AIForEdu is published by the Impact Glocal editorial and research team. The current operation is organized as a small editorial workflow, not as a fully staffed newsroom. Pages should avoid implying more scale or individual attribution than the site can currently support.</p>
             <p>Affiliate relationships may exist, but they do not determine review criteria. When an outbound link is monetized, it should be disclosed. Premium products are commercial offers; editorial pages should remain useful without requiring purchase.</p>
+          </div>
+        </div>
+
+        <div class="article-frame">
+          <p class="section-label">How the editorial desk works</p>
+          <div class="mt-5 grid gap-4 md:grid-cols-3">
+            {editorialDesks.map((desk) => (
+              <div class="info-card">
+                <p class="label">{desk.title}</p>
+                <p class="mt-3 text-sm leading-7 text-ink-500">{desk.summary}</p>
+              </div>
+            ))}
           </div>
         </div>
 

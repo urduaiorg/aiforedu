@@ -4,6 +4,8 @@ import ToolCard from '../components/ToolCard.astro';
 import NewsletterSignup from '../components/NewsletterSignup.astro';
 import ProductCard from '../components/ProductCard.astro';
 import { getCollection } from 'astro:content';
+import { toolCategoryMeta, toolCategoryOrder } from '../data/toolCategories';
+import { editorialSignals, readerQuestions } from '../data/editorial';
 
 export const prerender = true;
 
@@ -14,25 +16,18 @@ const featuredTools = allTools.filter(t => t.data.featured).slice(0, 6);
 const latestTools = allTools.sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime()).slice(0, 6);
 const displayTools = featuredTools.length > 0 ? featuredTools : latestTools;
 const avgRating = (allTools.reduce((sum, tool) => sum + tool.data.rating, 0) / allTools.length).toFixed(1);
-const categoryLabels: Record<string, string> = {
-  writing: 'Writing and feedback',
-  grading: 'Grading and assessment',
-  'lesson-planning': 'Lesson planning',
-  admin: 'Administration and operations',
-  'student-facing': 'Student-facing tools',
-  'special-ed': 'Special education',
-  analytics: 'Analytics and insight',
-};
-const categories = Object.entries(
-  allTools.reduce((acc, tool) => {
-    acc[tool.data.category] = (acc[tool.data.category] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>)
-)
-  .map(([slug, count]) => ({
+const categoriesByCount = allTools.reduce((acc, tool) => {
+  acc[tool.data.category] = (acc[tool.data.category] || 0) + 1;
+  return acc;
+}, {} as Record<string, number>);
+
+const categories = toolCategoryOrder
+  .filter((slug) => categoriesByCount[slug])
+  .map((slug) => ({
     slug,
-    name: categoryLabels[slug] || slug,
-    count,
+    name: toolCategoryMeta[slug].label,
+    description: toolCategoryMeta[slug].description,
+    count: categoriesByCount[slug],
   }))
   .sort((a, b) => b.count - a.count)
   .slice(0, 6);
@@ -145,10 +140,10 @@ const categories = Object.entries(
 
         <div class="grid gap-4 md:grid-cols-2" data-reveal-stagger>
           {categories.map((cat) => (
-            <a href={`/tools/?category=${cat.slug}`} class="index-card">
+            <a href={`/tools/category/${cat.slug}/`} class="index-card">
               <p class="label">{String(cat.count).padStart(2, '0')} reviews</p>
               <h3 class="mt-4 font-display text-display-xs text-ink-950">{cat.name}</h3>
-              <p class="mt-3 text-sm leading-7 text-ink-500">Explore the tools, pricing models, and implementation fit within this category.</p>
+              <p class="mt-3 text-sm leading-7 text-ink-500">{cat.description}</p>
               <div class="mt-6 btn-quiet">Open category</div>
             </a>
           ))}
@@ -263,7 +258,7 @@ const categories = Object.entries(
               <div>
                 <p class="section-label">Download access</p>
                 <h3 class="mt-3 font-display text-display-xs text-ink-950">Get instant access to the starter.</h3>
-                <p class="mt-3 max-w-xl text-sm leading-7 text-ink-500">Enter your work email and a little context. We will unlock the resource immediately and optionally send follow-up guidance if email delivery is configured.</p>
+                <p class="mt-3 max-w-xl text-sm leading-7 text-ink-500">Enter your work email and a little context. We unlock the resource immediately, and if email delivery is configured we send the follow-up guidance there as well.</p>
               </div>
               <div class="grid gap-4 md:grid-cols-2">
                 <div>
@@ -304,7 +299,7 @@ const categories = Object.entries(
                 Unlock the resource
               </button>
               <p x-show="error" x-text="error" class="text-sm text-red-600"></p>
-              <p class="small-note">No spam. Intended for school and district use.</p>
+              <p class="small-note">Intended for school and district use. We only ask for enough context to understand who the resource is helping. See <a href="/privacy/" class="underline underline-offset-4">privacy</a>.</p>
             </form>
           </template>
           <template x-if="done">
@@ -354,6 +349,42 @@ const categories = Object.entries(
           features={['Vendor evaluation rubric', 'Security questionnaire', 'Pilot program framework', 'Tool profile tracker', 'Comparison spreadsheet']}
           href="/products/tool-vetting-pack/"
         />
+      </div>
+    </div>
+  </section>
+
+  <section class="section-shell">
+    <div class="container-narrow" data-reveal>
+      <div class="article-frame text-left">
+        <p class="section-label">What leadership teams ask</p>
+        <h2 class="mt-3 font-display text-display-sm text-ink-950">The questions behind most AI decisions in schools are human, not technical.</h2>
+        <div class="mt-6 grid gap-4 md:grid-cols-2">
+          {readerQuestions.map((question) => (
+            <div class="info-card">
+              <h3 class="value">{question}</h3>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-shell-tight">
+    <div class="container-narrow" data-reveal>
+      <div class="cta-panel text-center">
+        <p class="section-label">Why trust this library</p>
+        <h2 class="mt-3 font-display text-display-xs text-ink-950">The site earns trust by showing its work.</h2>
+        <div class="mt-6 grid gap-4 text-left md:grid-cols-2">
+          {editorialSignals.map((signal) => (
+            <div class="info-card">
+              <p class="value">{signal}</p>
+            </div>
+          ))}
+        </div>
+        <div class="mt-6 flex flex-wrap justify-center gap-3">
+          <a href="/methodology/" class="btn-secondary">Read the methodology</a>
+          <a href="/about/" class="btn-secondary">See how the editorial desk works</a>
+        </div>
       </div>
     </div>
   </section>

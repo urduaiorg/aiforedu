@@ -6,6 +6,10 @@ interface Env {
   DB: D1Database;
 }
 
+const ROBOTS_HEADERS = {
+  'X-Robots-Tag': 'noindex, nofollow',
+};
+
 // Affiliate URL mapping — add real affiliate URLs here
 const affiliateMap: Record<string, string> = {
   'magicschool': 'https://www.magicschool.ai/?ref=aiforedu',
@@ -24,7 +28,7 @@ export const GET: APIRoute = async ({ params, request }) => {
   const destination = affiliateMap[slug];
 
   if (!destination) {
-    return new Response('Not found', { status: 404 });
+    return new Response('Not found', { status: 404, headers: ROBOTS_HEADERS });
   }
 
   // Track the click in D1
@@ -38,5 +42,11 @@ export const GET: APIRoute = async ({ params, request }) => {
     ).bind(slug, ip.slice(0, 8) + '***', ua.slice(0, 200), referer.slice(0, 500), new Date().toISOString()).run();
   }
 
-  return Response.redirect(destination, 302);
+  return new Response(null, {
+    status: 302,
+    headers: {
+      ...ROBOTS_HEADERS,
+      Location: destination,
+    },
+  });
 };

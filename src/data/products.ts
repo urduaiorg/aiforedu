@@ -12,6 +12,10 @@ export interface ProductDefinition {
   features: string[];
   deliverables: string[];
   outcomes: string[];
+  preview: string[];
+  delivery: string;
+  format: string;
+  license: string;
   faq: Array<{ question: string; answer: string }>;
 }
 
@@ -46,6 +50,14 @@ export const products: ProductDefinition[] = [
       'More consistent district messaging',
       'Reduced policy drafting time',
     ],
+    preview: [
+      'A board-facing narrative outline that frames why policy action is needed now',
+      'Editable parent communication language for introducing school AI expectations',
+      'A compliance matrix that helps teams separate policy language from legal review questions',
+    ],
+    delivery: 'Delivered immediately after checkout as a digital resource bundle.',
+    format: 'Editable documents, planning materials, and board-facing working files.',
+    license: 'Intended for internal school or district use and adaptation.',
     faq: [
       {
         question: 'Who is this for?',
@@ -85,6 +97,14 @@ export const products: ProductDefinition[] = [
       'More realistic implementation scope',
       'Fewer surprises during adoption planning',
     ],
+    preview: [
+      'A readiness scoring sheet that makes weak spots visible before procurement',
+      'A 90-day sequencing template for ownership, milestones, and dependencies',
+      'Stakeholder prompts for principals, cabinet, and instructional teams',
+    ],
+    delivery: 'Delivered immediately after checkout as a digital workbook and planning set.',
+    format: 'Editable worksheets, checklists, and planning templates.',
+    license: 'Intended for internal school or district planning use.',
     faq: [
       {
         question: 'When should I use this workbook?',
@@ -125,6 +145,14 @@ export const products: ProductDefinition[] = [
       'Cleaner vendor comparison process',
       'Better board and cabinet communication',
     ],
+    preview: [
+      'A side-by-side tool scorecard for vendor review meetings',
+      'A security and privacy question bank for procurement conversations',
+      'A recommendation memo structure for turning pilot notes into approval guidance',
+    ],
+    delivery: 'Delivered immediately after checkout as a digital evaluation toolkit.',
+    format: 'Editable scorecards, spreadsheets, questionnaires, and memo templates.',
+    license: 'Intended for internal school or district evaluation use.',
     faq: [
       {
         question: 'Is this only for IT teams?',
