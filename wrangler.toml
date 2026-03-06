@@ -2,6 +2,9 @@ name = "aiforedu"
 compatibility_date = "2024-12-01"
 compatibility_flags = ["nodejs_compat"]
 
+[assets]
+directory = "./dist"
+
 [vars]
 SITE_URL = "https://aiforedu.ai"
 BEEHIIV_PUBLICATION_ID = ""  # Add your Beehiiv publication ID
