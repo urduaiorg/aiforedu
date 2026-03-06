@@ -8,18 +8,16 @@ directory = "./dist"
 [vars]
 SITE_URL = "https://aiforedu.ai"
 
-# Uncomment and fill these after creating the services:
+# Set these via Cloudflare Dashboard → Pages → Environment variables (secrets)
 # BEEHIIV_PUBLICATION_ID = ""
 # LEMON_SQUEEZY_STORE_ID = ""
 # TURNSTILE_SECRET_KEY = ""
 
-# Uncomment after running: wrangler d1 create aiforedu-db
-# [[d1_databases]]
-# binding = "DB"
-# database_name = "aiforedu-db"
-# database_id = "PASTE_YOUR_ID_HERE"
+[[d1_databases]]
+binding = "DB"
+database_name = "aiforedu-db"
+database_id = "2a62322b-382c-4c11-98fc-c8a13d496533"
 
-# Uncomment after enabling R2 in Cloudflare Dashboard
-# [[r2_buckets]]
-# binding = "ASSETS"
-# bucket_name = "aiforedu-assets"
+[[r2_buckets]]
+binding = "ASSETS"
+bucket_name = "aiforedu-assets"
