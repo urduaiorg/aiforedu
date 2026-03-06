@@ -21,3 +21,8 @@ database_id = "2a62322b-382c-4c11-98fc-c8a13d496533"
 [[r2_buckets]]
 binding = "ASSETS"
 bucket_name = "aiforedu-assets"
+
+routes = [
+  { pattern = "aiforedu.ai", custom_domain = true },
+  { pattern = "www.aiforedu.ai", custom_domain = true }
+]
