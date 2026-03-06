@@ -3,6 +3,8 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import ToolCard from '../../components/ToolCard.astro';
 import { getCollection } from 'astro:content';
 
+export const prerender = true;
+
 const allTools = await getCollection('tools');
 const tools = allTools.sort((a, b) => b.data.rating - a.data.rating);
 

@@ -6,7 +6,7 @@ import cloudflare from '@astrojs/cloudflare';
 
 export default defineConfig({
   site: 'https://aiforedu.ai',
-  output: 'static',
+  output: 'server',
   adapter: cloudflare({
     platformProxy: { enabled: true },
     routes: { strategy: 'include' },

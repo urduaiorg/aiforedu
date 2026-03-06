@@ -5,6 +5,8 @@ import NewsletterSignup from '../components/NewsletterSignup.astro';
 import ProductCard from '../components/ProductCard.astro';
 import { getCollection } from 'astro:content';
 
+export const prerender = true;
+
 const allTools = await getCollection('tools');
 const allPolicies = await getCollection('policies');
 const allGuides = await getCollection('guides');

@@ -4,6 +4,8 @@ import ComplianceBadge from '../../components/ComplianceBadge.astro';
 import NewsletterSignup from '../../components/NewsletterSignup.astro';
 import { getCollection } from 'astro:content';
 
+export const prerender = true;
+
 export async function getStaticPaths() {
   const tools = await getCollection('tools');
   return tools.map(tool => ({ params: { slug: tool.slug }, props: { tool } }));
