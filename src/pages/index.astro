@@ -1,0 +1,196 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ToolCard from '../components/ToolCard.astro';
+import NewsletterSignup from '../components/NewsletterSignup.astro';
+import ProductCard from '../components/ProductCard.astro';
+import { getCollection } from 'astro:content';
+
+const allTools = await getCollection('tools');
+const featuredTools = allTools.filter(t => t.data.featured).slice(0, 6);
+const latestTools = allTools.sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime()).slice(0, 6);
+const displayTools = featuredTools.length > 0 ? featuredTools : latestTools;
+
+const categories = [
+  { name: 'Writing & Feedback', icon: '✍️', slug: 'writing', desc: 'AI tools for student writing support and teacher feedback' },
+  { name: 'Grading & Assessment', icon: '📝', slug: 'grading', desc: 'Automated grading, rubric builders, and assessment tools' },
+  { name: 'Lesson Planning', icon: '📚', slug: 'lesson-planning', desc: 'AI-powered lesson generators and curriculum helpers' },
+  { name: 'Admin & Operations', icon: '🏫', slug: 'admin', desc: 'School management, scheduling, and communications' },
+  { name: 'Student-Facing', icon: '🧑‍🎓', slug: 'student-facing', desc: 'Tutoring bots, study aids, and student productivity' },
+  { name: 'Special Education', icon: '♿', slug: 'special-ed', desc: 'IEP tools, accommodations, and accessibility helpers' },
+];
+---
+
+<BaseLayout title="Home">
+  <!-- Hero -->
+  <section class="bg-gradient-to-br from-primary-600 via-primary-700 to-primary-900 text-white">
+    <div class="container-wide py-16 md:py-24">
+      <div class="max-w-3xl">
+        <span class="badge bg-white/20 text-white text-sm mb-4">Trusted by 500+ school leaders</span>
+        <h1 class="font-display text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight">
+          The AI Library<br />Built for School Leaders
+        </h1>
+        <p class="mt-6 text-lg md:text-xl text-primary-100 max-w-2xl leading-relaxed">
+          Unbiased tool reviews, ready-to-adopt policies, and step-by-step guides — everything you need to bring AI into your school confidently and responsibly.
+        </p>
+        <div class="mt-8 flex flex-col sm:flex-row gap-4">
+          <a href="/tools/" class="btn-accent text-base">Browse Tool Reviews →</a>
+          <a href="#free-template" class="btn-secondary !border-white !text-white hover:!bg-white/10 text-base">Get Free Policy Template</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Social proof bar -->
+  <section class="bg-white border-b border-gray-200 py-4">
+    <div class="container-wide flex flex-wrap items-center justify-center gap-6 md:gap-12 text-sm text-gray-500">
+      <span>🏫 50+ Tools Reviewed</span>
+      <span>📋 FERPA-Checked</span>
+      <span>⭐ Independent Ratings</span>
+      <span>🔄 Updated Monthly</span>
+      <span>🇺🇸 U.S. K-12 Focused</span>
+    </div>
+  </section>
+
+  <!-- Categories -->
+  <section class="py-16">
+    <div class="container-wide">
+      <h2 class="font-display text-3xl font-bold text-gray-900 text-center">Browse by Category</h2>
+      <p class="mt-3 text-gray-600 text-center max-w-2xl mx-auto">Every tool independently reviewed for privacy compliance, pedagogical value, and practical classroom fit.</p>
+      <div class="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {categories.map(cat => (
+          <a href={`/tools/?category=${cat.slug}`} class="card group flex items-start gap-4">
+            <span class="text-3xl">{cat.icon}</span>
+            <div>
+              <h3 class="font-semibold text-gray-900 group-hover:text-primary-600 transition-colors">{cat.name}</h3>
+              <p class="mt-1 text-sm text-gray-500">{cat.desc}</p>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured tools -->
+  {displayTools.length > 0 && (
+    <section class="py-16 bg-white">
+      <div class="container-wide">
+        <div class="flex items-center justify-between">
+          <h2 class="font-display text-3xl font-bold text-gray-900">Top-Rated Tools</h2>
+          <a href="/tools/" class="text-primary-600 font-medium text-sm hover:underline">View all →</a>
+        </div>
+        <div class="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {displayTools.map(tool => (
+            <ToolCard
+              title={tool.data.title}
+              slug={tool.slug}
+              description={tool.data.description}
+              category={tool.data.category}
+              pricing={tool.data.pricing}
+              rating={tool.data.rating}
+              ferpaCompliant={tool.data.ferpaCompliant}
+              bestFor={tool.data.bestFor}
+              featured={tool.data.featured}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- Free template CTA -->
+  <section id="free-template" class="py-16 bg-accent-50">
+    <div class="container-wide">
+      <div class="max-w-3xl mx-auto text-center">
+        <span class="badge-green text-sm mb-4">Free Download</span>
+        <h2 class="font-display text-3xl font-bold text-gray-900">Free AI Acceptable-Use Policy Template</h2>
+        <p class="mt-4 text-gray-600 max-w-xl mx-auto">Board-ready, 12-section policy template covering FERPA, COPPA, academic integrity, and more. Used by 200+ districts nationwide.</p>
+        <form
+          class="mt-8 max-w-md mx-auto flex flex-col sm:flex-row gap-3"
+          x-data="{ email: '', done: false }"
+          @submit.prevent="
+            const res = await fetch('/api/free-download', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email, resource: 'ai-policy-template' })
+            });
+            if (res.ok) done = true;
+          "
+        >
+          <template x-if="!done">
+            <div class="flex flex-col sm:flex-row gap-3 w-full">
+              <input type="email" x-model="email" placeholder="you@school.edu" required class="flex-1 px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-accent-500" />
+              <button type="submit" class="btn-accent whitespace-nowrap">Download Free</button>
+            </div>
+          </template>
+          <template x-if="done">
+            <p class="text-accent-700 font-semibold py-3">Check your inbox — the template is on its way!</p>
+          </template>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Products -->
+  <section class="py-16">
+    <div class="container-wide">
+      <h2 class="font-display text-3xl font-bold text-gray-900 text-center">Premium Resources</h2>
+      <p class="mt-3 text-gray-600 text-center max-w-2xl mx-auto">Save weeks of work with our ready-to-implement toolkits, vetted by education consultants.</p>
+      <div class="mt-10 grid grid-cols-1 md:grid-cols-3 gap-8">
+        <ProductCard
+          title="AI Policy Kit"
+          price="$29"
+          badge="Best Seller"
+          description="Complete policy bundle for district-wide AI adoption."
+          features={['5 editable policy templates', 'Board presentation deck', 'Parent communication guide', 'Staff training checklist', 'FERPA compliance matrix']}
+          href="/products/policy-kit/"
+        />
+        <ProductCard
+          title="Readiness Workbook"
+          price="$19"
+          description="Self-assessment and planning tool for AI integration."
+          features={['Infrastructure audit checklist', '90-day implementation plan', 'Budget planning worksheet', 'Stakeholder survey templates', 'Progress tracking dashboard']}
+          href="/products/readiness-workbook/"
+        />
+        <ProductCard
+          title="Tool Vetting Pack"
+          price="$39"
+          badge="Most Comprehensive"
+          description="Everything you need to evaluate and approve AI tools."
+          features={['Vendor evaluation rubric', 'Security questionnaire template', 'Pilot program framework', '50+ pre-vetted tool profiles', 'Comparison spreadsheet']}
+          href="/products/tool-vetting-pack/"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- Newsletter -->
+  <section class="py-16 bg-white">
+    <div class="container-wide">
+      <NewsletterSignup variant="hero" />
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section class="py-16">
+    <div class="container-wide">
+      <h2 class="font-display text-3xl font-bold text-gray-900 text-center">How AIForEdu Works</h2>
+      <div class="mt-10 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+        <div class="text-center">
+          <div class="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto text-2xl">1</div>
+          <h3 class="mt-4 font-semibold text-gray-900">Browse & Compare</h3>
+          <p class="mt-2 text-sm text-gray-600">Search 50+ independently reviewed AI tools filtered by grade level, subject, compliance, and price.</p>
+        </div>
+        <div class="text-center">
+          <div class="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto text-2xl">2</div>
+          <h3 class="mt-4 font-semibold text-gray-900">Get the Policies</h3>
+          <p class="mt-2 text-sm text-gray-600">Download free templates or grab the full Policy Kit to present to your board with confidence.</p>
+        </div>
+        <div class="text-center">
+          <div class="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto text-2xl">3</div>
+          <h3 class="mt-4 font-semibold text-gray-900">Implement with Guides</h3>
+          <p class="mt-2 text-sm text-gray-600">Follow step-by-step guides and the Readiness Workbook to roll out AI responsibly.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

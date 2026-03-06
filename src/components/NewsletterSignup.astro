@@ -1,0 +1,62 @@
+---
+interface Props {
+  variant?: 'inline' | 'hero' | 'banner';
+  heading?: string;
+  subheading?: string;
+}
+
+const { variant = 'inline', heading = 'Get the Weekly AI-in-Ed Briefing', subheading = 'One tool review, one policy tip, one action step — every Tuesday. Join 2,500+ school leaders.' } = Astro.props;
+---
+
+<div class:list={[
+  'rounded-xl',
+  variant === 'hero' && 'bg-primary-600 text-white p-8 md:p-12',
+  variant === 'banner' && 'bg-accent-50 border border-accent-200 p-6',
+  variant === 'inline' && 'bg-gray-100 p-6',
+]} x-data="{ email: '', submitted: false, error: '' }">
+  <div class="max-w-xl mx-auto text-center" x-show="!submitted">
+    <h3 class:list={[
+      'font-display font-bold',
+      variant === 'hero' ? 'text-2xl md:text-3xl text-white' : 'text-xl text-gray-900',
+    ]}>{heading}</h3>
+    <p class:list={[
+      'mt-2 text-sm',
+      variant === 'hero' ? 'text-primary-100' : 'text-gray-600',
+    ]}>{subheading}</p>
+
+    <form
+      class="mt-6 flex flex-col sm:flex-row gap-3"
+      @submit.prevent="
+        error = '';
+        if (!email) { error = 'Please enter your email'; return; }
+        try {
+          const res = await fetch('/api/subscribe', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
+          });
+          if (res.ok) { submitted = true; }
+          else { const d = await res.json(); error = d.error || 'Something went wrong'; }
+        } catch(e) { error = 'Network error — please try again'; }
+      "
+    >
+      <input
+        type="email"
+        x-model="email"
+        placeholder="you@school.edu"
+        required
+        class="flex-1 px-4 py-3 rounded-lg border border-gray-300 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+      />
+      <button type="submit" class:list={[
+        variant === 'hero' ? 'btn-accent' : 'btn-primary',
+      ]}>Subscribe Free</button>
+    </form>
+    <p x-show="error" x-text="error" class="mt-2 text-sm text-red-400"></p>
+    <p class:list={['mt-3 text-xs', variant === 'hero' ? 'text-primary-200' : 'text-gray-500']}>No spam. Unsubscribe anytime. We respect your inbox.</p>
+  </div>
+
+  <div x-show="submitted" class="text-center py-4">
+    <p class:list={['font-display font-bold text-xl', variant === 'hero' ? 'text-white' : 'text-gray-900']}>You're in! 🎉</p>
+    <p class:list={['mt-2 text-sm', variant === 'hero' ? 'text-primary-100' : 'text-gray-600']}>Check your inbox for a welcome email with your free AI Policy Template.</p>
+  </div>
+</div>

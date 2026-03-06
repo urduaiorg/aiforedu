@@ -1,0 +1,46 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ToolCard from '../../components/ToolCard.astro';
+import { getCollection } from 'astro:content';
+
+const allTools = await getCollection('tools');
+const tools = allTools.sort((a, b) => b.data.rating - a.data.rating);
+
+const categories = [...new Set(allTools.map(t => t.data.category))].sort();
+---
+
+<BaseLayout title="AI Tool Reviews" description="Independent reviews of 50+ AI tools for K-12 education. FERPA-checked, rated, and compared.">
+  <section class="py-12">
+    <div class="container-wide">
+      <h1 class="font-display text-4xl font-bold text-gray-900">AI Tool Reviews</h1>
+      <p class="mt-3 text-lg text-gray-600 max-w-2xl">Every tool independently reviewed for privacy compliance, pedagogical value, and practical classroom fit.</p>
+
+      <!-- Filters -->
+      <div class="mt-8 flex flex-wrap gap-3" x-data="{ active: 'all' }">
+        <button @click="active = 'all'" :class="active === 'all' ? 'bg-primary-600 text-white' : 'bg-white text-gray-700'" class="px-4 py-2 rounded-full text-sm font-medium border border-gray-200 transition-colors">All Tools</button>
+        {categories.map(cat => (
+          <button @click={`active = '${cat}'`} x-bind:class={`active === '${cat}' ? 'bg-primary-600 text-white' : 'bg-white text-gray-700'`} class="px-4 py-2 rounded-full text-sm font-medium border border-gray-200 transition-colors capitalize">{cat.replace('-', ' ')}</button>
+        ))}
+      </div>
+
+      <!-- Tool grid -->
+      <div class="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {tools.map(tool => (
+          <div x-data x-show={`active === 'all' || active === '${tool.data.category}'`}>
+            <ToolCard
+              title={tool.data.title}
+              slug={tool.slug}
+              description={tool.data.description}
+              category={tool.data.category}
+              pricing={tool.data.pricing}
+              rating={tool.data.rating}
+              ferpaCompliant={tool.data.ferpaCompliant}
+              bestFor={tool.data.bestFor}
+              featured={tool.data.featured}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,27 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import NewsletterSignup from '../components/NewsletterSignup.astro';
+---
+
+<BaseLayout title="About AIForEdu" description="We're building the most trusted AI resource library for K-12 school leaders in America.">
+  <section class="py-16">
+    <div class="container-narrow">
+      <h1 class="font-display text-4xl font-bold text-gray-900">About AIForEdu.ai</h1>
+      <div class="mt-8 prose-content">
+        <p>AIForEdu.ai is the independent AI-in-education library built for K-12 school leaders who want to adopt AI responsibly — without the vendor hype.</p>
+        <p>We publish unbiased tool reviews (every tool gets the same evaluation framework), ready-to-use policy templates (reviewed by education consultants), and practical implementation guides (written for principals and superintendents, not engineers).</p>
+        <h2>Our Mission</h2>
+        <p>Every school leader in America should have access to trustworthy, practical guidance for bringing AI into their schools. Cost should never be a barrier to responsible AI adoption.</p>
+        <p>That's why our core library — tool reviews, policy templates, and guides — is 100% free. Our premium products exist for leaders who want done-for-you toolkits that save weeks of work.</p>
+        <h2>How We Review Tools</h2>
+        <p>Every tool on AIForEdu.ai goes through our standardized evaluation process covering privacy compliance (FERPA, COPPA, state laws), pedagogical value, pricing transparency, ease of implementation, and student safety.</p>
+        <p>We accept affiliate partnerships with some tools we review, but editorial independence is non-negotiable. Our ratings are based on our evaluation framework — not on who pays us. Affiliate relationships are always disclosed.</p>
+        <h2>Who We Are</h2>
+        <p>AIForEdu.ai is a product of <a href="https://imglocal.com">Impact Glocal Inc.</a>, a company dedicated to helping education leaders navigate the AI revolution with confidence.</p>
+      </div>
+      <div class="mt-12">
+        <NewsletterSignup variant="banner" />
+      </div>
+    </div>
+  </section>
+</BaseLayout>

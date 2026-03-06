@@ -1,0 +1,15 @@
+---
+interface Props {
+  ferpa: boolean;
+  coppa: boolean;
+  size?: 'sm' | 'md';
+}
+const { ferpa, coppa, size = 'sm' } = Astro.props;
+const cls = size === 'sm' ? 'text-xs px-2 py-0.5' : 'text-sm px-3 py-1';
+---
+
+<div class="flex gap-2 flex-wrap">
+  {ferpa && <span class:list={['rounded-full font-medium', cls, 'bg-green-100 text-green-800']}>FERPA ✓</span>}
+  {coppa && <span class:list={['rounded-full font-medium', cls, 'bg-blue-100 text-blue-800']}>COPPA ✓</span>}
+  {!ferpa && <span class:list={['rounded-full font-medium', cls, 'bg-red-100 text-red-700']}>FERPA ✗</span>}
+</div>
