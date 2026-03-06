@@ -2,7 +2,8 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import NewsletterSignup from '../../components/NewsletterSignup.astro';
 import { getCollection } from 'astro:content';
-import { breadcrumbSchema } from '../../lib/schema';
+import { breadcrumbSchema, howToSchema, articleSchema } from '../../lib/schema';
+import { getAuthor } from '../../data/authors';
 
 export const prerender = true;
 
@@ -12,33 +13,57 @@ export async function getStaticPaths() {
 }
 
 const { guide } = Astro.props;
-const { Content } = await guide.render();
-const suggestedResourceHref = guide.slug === 'how-to-evaluate-ai-tools-for-your-district'
-  ? '/policy/ferpa-ai-compliance-checklist/'
-  : '/downloads/ai-policy-template/';
-const suggestedResourceLabel = guide.slug === 'how-to-evaluate-ai-tools-for-your-district'
-  ? 'Open the FERPA checklist'
-  : 'Open the free policy starter';
+const { Content, headings } = await guide.render();
+const author = getAuthor('editorial-desk');
+
+// Related content
+const allPolicies = await getCollection('policies');
+const allTools = await getCollection('tools');
+const allComparisons = await getCollection('comparisons');
+const relatedPolicies = allPolicies.slice(0, 2);
+const relatedComparisons = allComparisons.slice(0, 2);
+
+// Extract steps from H2 headings for HowTo schema
+const stepHeadings = headings.filter(h => h.depth === 2 && /step\s*\d/i.test(h.text));
+const hasSteps = stepHeadings.length >= 2;
+
+const guideUrl = `https://aiforedu.ai/guides/${guide.slug}/`;
 const structuredData = [
   breadcrumbSchema([
     { name: 'Home', url: 'https://aiforedu.ai/' },
     { name: 'Guides', url: 'https://aiforedu.ai/guides/' },
-    { name: guide.data.title, url: `https://aiforedu.ai/guides/${guide.slug}/` },
+    { name: guide.data.title, url: guideUrl },
   ]),
-  {
-    '@context': 'https://schema.org',
-    '@type': 'Article',
+  articleSchema({
     headline: guide.data.title,
     description: guide.data.description,
     datePublished: guide.data.publishDate.toISOString(),
     dateModified: guide.data.lastUpdated.toISOString(),
-    author: { '@type': 'Organization', name: 'AIForEdu' },
-    publisher: { '@type': 'Organization', name: 'AIForEdu', url: 'https://aiforedu.ai' },
-  },
+    url: guideUrl,
+    authorName: author.name,
+  }),
+  ...(hasSteps ? [howToSchema({
+    name: guide.data.title,
+    description: guide.data.description,
+    totalTime: `PT${guide.data.readTime}M`,
+    url: guideUrl,
+    steps: stepHeadings.map(h => ({
+      name: h.text,
+      text: h.text,
+      url: `${guideUrl}#${h.slug}`,
+    })),
+  })] : []),
 ];
 ---
 
-<BaseLayout title={guide.data.title} description={guide.data.description} ogType="article" structuredData={structuredData}>
+<BaseLayout
+  title={guide.data.title}
+  description={guide.data.description}
+  ogType="article"
+  structuredData={structuredData}
+  publishDate={guide.data.publishDate}
+  modifiedDate={guide.data.lastUpdated}
+>
   <article class="section-shell-tight">
     <div class="container-full">
       <nav class="breadcrumbs">
@@ -55,28 +80,59 @@ const structuredData = [
             <p class="section-label">Implementation guide</p>
             <h1 class="mt-3 page-title">{guide.data.title}</h1>
             <p class="page-lede">{guide.data.description}</p>
-            <div class="mt-6 flex flex-wrap gap-2">
+            <div class="mt-6 flex flex-wrap items-center gap-3">
               <span class="badge-blue">{guide.data.category}</span>
               <span class="badge-yellow">{guide.data.readTime} min read</span>
+            </div>
+            <div class="mt-4 flex items-center gap-3 text-sm text-ink-500">
+              <span>By <strong class="text-ink-700">{author.name}</strong>, {author.role}</span>
+              <span class="divider-dot"></span>
+              <span>{guide.data.lastUpdated.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
             </div>
             <div class="prose-content mt-12"><Content /></div>
           </div>
 
           <aside class="article-rail">
             <div class="article-rail-card">
+              <p class="label">About the author</p>
+              <p class="mt-2 text-sm font-semibold text-ink-900">{author.name}</p>
+              <p class="mt-1 text-xs text-ink-500">{author.role} · {author.credential}</p>
+              <p class="mt-2 text-sm leading-6 text-ink-500">{author.bio}</p>
+            </div>
+            <div class="article-rail-card">
               <p class="label">Updated</p>
               <p class="value">{guide.data.lastUpdated.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</p>
             </div>
+            {relatedPolicies.length > 0 && (
+              <div class="article-rail-card">
+                <p class="label">Related policies</p>
+                <div class="mt-3 space-y-2">
+                  {relatedPolicies.map(p => (
+                    <a href={`/policy/${p.slug}/`} class="block text-sm font-medium text-ink-700 hover:text-brand-700">{p.data.title}</a>
+                  ))}
+                </div>
+              </div>
+            )}
+            {relatedComparisons.length > 0 && (
+              <div class="article-rail-card">
+                <p class="label">Related comparisons</p>
+                <div class="mt-3 space-y-2">
+                  {relatedComparisons.map(c => (
+                    <a href={`/compare/${c.slug}/`} class="block text-sm font-medium text-ink-700 hover:text-brand-700">{c.data.title}</a>
+                  ))}
+                </div>
+              </div>
+            )}
             <div class="article-rail-card">
-              <p class="label">Next step</p>
-              <p class="mt-3 text-sm leading-7 text-ink-500">Pair this guidance with a free resource or framework if your team needs a concrete next step.</p>
-              <a href={suggestedResourceHref} class="btn-secondary mt-5 w-full justify-center">{suggestedResourceLabel}</a>
+              <p class="label">Methodology</p>
+              <p class="mt-3 text-sm leading-7 text-ink-500">See how AIForEdu evaluates tools, policies, and implementation guidance.</p>
+              <a href="/methodology/" class="btn-secondary mt-5 w-full justify-center">Review the method</a>
             </div>
           </aside>
         </div>
       </div>
 
-      <div class="mt-10"><NewsletterSignup variant="hero" /></div>
+      <div class="mt-10"><NewsletterSignup variant="hero" heading="Get guides like this every week" subheading="Join educators and institutions who stay ahead with one concise Tuesday briefing on AI in education." /></div>
     </div>
   </article>
 </BaseLayout>

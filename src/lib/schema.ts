@@ -68,3 +68,73 @@ export function faqSchema(items: Array<{ question: string; answer: string }>) {
     })),
   };
 }
+
+/** HowTo schema — triggers step-by-step rich results in Google */
+export function howToSchema(opts: {
+  name: string;
+  description: string;
+  totalTime?: string;
+  steps: Array<{ name: string; text: string; url?: string }>;
+  url: string;
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'HowTo',
+    name: opts.name,
+    description: opts.description,
+    ...(opts.totalTime && { totalTime: opts.totalTime }),
+    step: opts.steps.map((s, i) => ({
+      '@type': 'HowToStep',
+      position: i + 1,
+      name: s.name,
+      text: s.text,
+      ...(s.url && { url: s.url }),
+    })),
+    author: { '@type': 'Organization', name: 'AIForEdu', url: 'https://aiforedu.ai' },
+  };
+}
+
+/** ItemList schema — triggers carousel rich results for roundups */
+export function itemListSchema(opts: {
+  name: string;
+  description: string;
+  items: Array<{ name: string; url: string; position?: number }>;
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: opts.name,
+    description: opts.description,
+    numberOfItems: opts.items.length,
+    itemListElement: opts.items.map((item, i) => ({
+      '@type': 'ListItem',
+      position: item.position ?? i + 1,
+      name: item.name,
+      url: item.url,
+    })),
+  };
+}
+
+/** Reusable Article schema for content pages */
+export function articleSchema(opts: {
+  headline: string;
+  description: string;
+  datePublished: string;
+  dateModified: string;
+  url: string;
+  image?: string;
+  authorName?: string;
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: opts.headline,
+    description: opts.description,
+    datePublished: opts.datePublished,
+    dateModified: opts.dateModified,
+    url: opts.url,
+    ...(opts.image && { image: opts.image }),
+    author: { '@type': 'Organization', name: opts.authorName || 'AIForEdu' },
+    publisher: { '@type': 'Organization', name: 'AIForEdu', url: 'https://aiforedu.ai' },
+  };
+}
